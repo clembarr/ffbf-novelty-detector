@@ -1,0 +1,81 @@
+# ------------------------------
+# OS / Editor
+# ------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# ------------------------------
+# Python
+# ------------------------------
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python dependency locks (optional, keep if used)
+# poetry.lock
+# Pipfile.lock
+
+# ------------------------------
+# Rust
+# ------------------------------
+target/
+**/*.rs.bk
+
+# Cargo.lock:
+# Keep for binaries/apps, ignore for libraries.
+# Uncomment the next line if this is a library:
+# Cargo.lock
+
+# ------------------------------
+# Env / Secrets
+# ------------------------------
+.env
+.env.*
+*.local
+
+# ------------------------------
+# Logs
+# ------------------------------
+*.log
+logs/
+
+# ------------------------------
+# Project-specific generated files
+# ------------------------------
+tmp/
+temp/
+.cache/
+
+# AI
+.claude/
+CLAUDE.*
