@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
+use serde::{Deserialize, Serialize};
 
 use crate::config::FFBFConfig;
 
@@ -8,7 +9,7 @@ use crate::config::FFBFConfig;
 ///
 /// Each KC connects to a random subset of input neurons (PNs).
 /// Projection computes KC activations and returns the top-k winner indices.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Projection {
     /// For each KC, sorted indices of connected input neurons.
     pub(crate) connections: Vec<Vec<usize>>,

@@ -5,7 +5,7 @@ use crate::projection::Projection;
 
 /// Fruit Fly Bloom Filter — novelty detector based on sparse random projection
 /// and Hebbian-like synaptic weight updates.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct FFBF {
     pub(crate) cfg: FFBFConfig,
     pub(crate) projection: Projection,

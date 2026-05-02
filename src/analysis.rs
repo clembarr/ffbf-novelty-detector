@@ -14,7 +14,7 @@ pub fn novelty_score(weights: &[f32], active_kcs: &[usize]) -> f32 {
 }
 
 /// Ring buffer tracking recent novelty scores for adaptive thresholding.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct NoveltyWindow {
     buf: Vec<f32>,
     head: usize,
