@@ -35,7 +35,7 @@ pub fn tick_step(w: f32, tick_rate: f32, reminiscence_factor: f32, shape: &TickS
     let target = 1.0 + reminiscence_peak(w, reminiscence_factor);
     let delta = target - w;
     let step = match shape {
-        TickShape::Lin      => tick_rate * delta,
+        TickShape::Lin => tick_rate * delta,
         TickShape::Exp => tick_rate * delta * delta.abs(),
         TickShape::Log => tick_rate * delta / (1.0 + delta.abs()),
     };
