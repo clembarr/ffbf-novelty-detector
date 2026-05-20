@@ -1,43 +1,48 @@
 use crate::decay::{DecayMode, TickShape};
 use serde::{Deserialize, Serialize};
 
-/// Hyperparamètres d'un filtre FFBF.
+/// Fruit Fly Bloom Filter hyperparameters
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FFBFConfig {
-    /// Dimension du vecteur d'entrée — doit correspondre à tous les vecteurs insérés.
+    /// Input vector dimension, which must match all inserted vectors.
     pub input_dim: usize,
-    /// Nombre de synapses KC→MBON (taille du filtre). Recommandé : `30 * expected_n`.
+    /// Number of KC->MBON synapses representing the size of the filter. Recommended: `30 * expected_n`.
     pub m: usize,
-    /// Nombre de KCs actifs par stimulus (~5% de m).
+    /// Number of activated KCs per stimulus (= number of indices on which project hashed inputs, typically ~5% of m).
     pub k: usize,
-    /// Ratio de PNs connectés par KC (sparsité de la matrice). Défaut biologique : 0.12.
+    /// PNs ratio mapped for each KC (= fraction of inputs connected per KC, matrix sparsity).
     pub projection_sparsity: f32,
-    /// Facteur de décroissance des synapses actives sur `add()`. Plage : [0.0, 1.0).
+    /// Depression factor for active synapses on `add()` (= learning factor per input, range: [0.0, 1.0]).
     pub delta: f32,
-    /// Incrément de récupération des synapses inactives sur `add()`. Plage : [0.0, 1.0].
+    /// Increment for recovering inactive synapses on `add()` (= forgetting factor per input by memory saturation effect, range: [0.0, 1.0]).
     pub epsilon: f32,
-    /// Valeur maximale d'un poids. Défaut : 2.0.
+    /// Maximum weight value. Default to 1.0, but can be set above 1.0 to allow for reminiscence overshoot [TODO feature]. 
     pub w_max: f32,
-    /// Mode de décroissance : edge only ou edge + front.
+    /// Decay mode for forgetting behavior. 
+    /// EdgeOnly = only recover epsilon on `add()` for inactive synapses (memory saturation effect only), 
+    /// EdgeAndFront = also recover epsilon on `add()` + passive decay of delta on `tick()` (entropy effect), for both active and inactive synapses.
     pub decay_mode: DecayMode,
-    /// Forme de la courbe de récupération tick().
+    /// Shape for the tick decay curve, affecting how weights return to the target value over time.
+    /// Lin = constant speed toward the target,
+    /// Exp = decay quickly at the beginning, then slower at the end (strengthens strong memories and weakens weak ones),
+    /// Log = decay slowly at the beginning, then faster at the end (strengthens weak memories and weakens strong ones).
     pub tick_shape: TickShape,
-    /// Vitesse de décroissance passive par appel tick(). Plage : (0.0, 1.0].
+    /// Decay speed for passive decay on `tick()`. Range: (0.0, 1.0).
     pub tick_rate: f32,
-    /// Amplitude du dépassement de réminiscence au-dessus de 1.0. Plage : [0.0, 1.0].
-    pub reminiscence_factor: f32,
-    /// Nombre de scores de nouveauté récents dans le ring buffer. Min : 2.
+    /// Overshoot factor for reminiscence above 1.0. Range: [0.0, 1.0]. [TODO feature]
+    // pub reminiscence_factor: f32,
+    /// Number of recent novelty scores to keep in the ring buffer for dynamic thresholding. 
     pub window_size: usize,
-    /// Graine RNG optionnelle pour une matrice de projection déterministe.
+    /// Optional RNG seed for deterministic projection matrix generation, for reproducibility. 
     pub seed: Option<u64>,
 }
 
 impl FFBFConfig {
-    /// Construit une config sensée pour des vecteurs de dimension `input_dim`
-    /// et une population attendue de `expected_n` éléments.
+    /// Build default config based on input dimension and expected number of items to store.
     pub fn default_for(input_dim: usize, expected_n: usize) -> Self {
         let m = 30 * expected_n.max(1);
         let k = ((m as f32 * 0.05).round() as usize).max(1);
+        
         Self {
             input_dim,
             m,
@@ -45,36 +50,43 @@ impl FFBFConfig {
             projection_sparsity: 0.12,
             delta: 0.5,
             epsilon: 0.05,
-            w_max: 2.0,
+            w_max: 1.0,
             decay_mode: DecayMode::EdgeOnly,
             tick_shape: TickShape::Exp,
             tick_rate: 0.01,
-            reminiscence_factor: 0.0,
+            // pub reminiscence_factor: f32,
             window_size: 100,
             seed: None,
         }
     }
 
-    /// Valide toutes les plages d'hyperparamètres. Retourne `Err` avec description si invalide.
+    /// Self validate all hyperparameters ranges. 
+    /// Returns `Err` with description if invalid, otherwise `Ok(())`.
     pub fn validate(&self) -> Result<(), String> {
+        if self.input_dim == 0 {
+            return Err("input_dim must be >= 1".to_string());
+        }
+        if self.k == 0 {
+            return Err("k must be >= 1".to_string());
+        }
         if self.k >= self.m {
             return Err(format!("k ({}) must be < m ({})", self.k, self.m));
         }
         if self.delta < 0.0 || self.delta >= 1.0 {
-            return Err(format!("delta ({}) must be in [0.0, 1.0)", self.delta));
+            return Err(format!("delta ({}) must be in [0.0, 1.0[", self.delta));
         }
         if self.epsilon < 0.0 || self.epsilon > 1.0 {
             return Err(format!("epsilon ({}) must be in [0.0, 1.0]", self.epsilon));
         }
         if self.w_max < 1.0 {
-            return Err(format!("w_max ({}) must be >= 1.0", self.w_max));
+            return Err(format!("w_max ({}) must be >= 1.0, which is the base weight value", self.w_max));
         }
         if self.tick_rate <= 0.0 {
             return Err(format!("tick_rate ({}) must be > 0.0", self.tick_rate));
         }
         if self.projection_sparsity <= 0.0 || self.projection_sparsity > 1.0 {
             return Err(format!(
-                "projection_sparsity ({}) must be in (0.0, 1.0]",
+                "projection_sparsity ({}) must be in ]0.0, 1.0]",
                 self.projection_sparsity
             ));
         }
@@ -100,6 +112,20 @@ mod tests {
         let cfg = FFBFConfig::default_for(128, 1000);
         let expected_k = ((cfg.m as f32 * 0.05).round() as usize).max(1);
         assert_eq!(cfg.k, expected_k);
+    }
+
+    #[test]
+    fn validate_rejects_zero_input_dim() {
+        let mut cfg = FFBFConfig::default_for(128, 100);
+        cfg.input_dim = 0;
+        assert!(cfg.validate().is_err());
+    }
+
+    #[test]
+    fn validate_rejects_zero_k() {
+        let mut cfg = FFBFConfig::default_for(128, 100);
+        cfg.k = 0;
+        assert!(cfg.validate().is_err());
     }
 
     #[test]

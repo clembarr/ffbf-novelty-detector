@@ -1,15 +1,16 @@
 /// Compute the raw novelty score from synaptic weights at active KC positions.
-///
 /// Parameters:
-///   weights: Full weight vector over all KCs.
-///   active_kcs: Sorted indices of active KCs (top-k from projection).
+///   weights: full weight vector over all KCs.
+///   active_kcs: sorted indices of active KCs (top-k from projection).
 /// Returns:
 ///   Mean weight at active positions. Higher means more novel (weights not yet depressed).
 /// Panics:
 ///   If any index in `active_kcs` is out of bounds for `weights`.
 pub fn novelty_score(weights: &[f32], active_kcs: &[usize]) -> f32 {
     assert!(!active_kcs.is_empty(), "active_kcs must not be empty");
+
     let sum: f32 = active_kcs.iter().map(|&i| weights[i]).sum();
+
     sum / active_kcs.len() as f32
 }
 
@@ -23,9 +24,8 @@ pub struct NoveltyWindow {
 
 impl NoveltyWindow {
     /// Create a new window with the given capacity.
-    ///
     /// Parameters:
-    ///   capacity: Maximum number of scores retained. Must be >= 2.
+    ///   capacity: maximum number of scores retained.
     /// Panics:
     ///   If `capacity` < 2.
     pub fn new(capacity: usize) -> Self {
@@ -37,6 +37,7 @@ impl NoveltyWindow {
     pub fn push(&mut self, score: f32) {
         self.buf[self.head] = score;
         self.head = (self.head + 1) % self.buf.len();
+
         if self.len < self.buf.len() {
             self.len += 1;
         }
@@ -47,7 +48,9 @@ impl NoveltyWindow {
         if self.len == 0 {
             return None;
         }
+
         let sum: f32 = self.buf[..self.len].iter().sum();
+
         Some(sum / self.len as f32)
     }
 
@@ -62,7 +65,6 @@ impl NoveltyWindow {
     }
 
     /// Whether `score` exceeds the window mean by at least `threshold` ratio.
-    ///
     /// Parameters:
     ///   score: Candidate novelty score.
     ///   threshold: Multiplier on the mean; e.g. `1.0` means "above mean".
