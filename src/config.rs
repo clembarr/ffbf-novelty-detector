@@ -52,7 +52,7 @@ impl FFBFConfig {
             epsilon: 0.05,
             w_max: 1.0,
             decay_mode: DecayMode::EdgeOnly,
-            tick_shape: TickShape::Exp,
+            tick_shape: TickShape::Lin,
             tick_rate: 0.01,
             // pub reminiscence_factor: f32,
             window_size: 100,
