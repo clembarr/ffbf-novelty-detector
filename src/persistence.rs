@@ -4,7 +4,6 @@ use std::path::Path;
 use crate::filter::FFBF;
 
 /// Serialize `ffbf` to a JSON string.
-///
 /// Returns:
 ///   `Ok(String)` with the JSON representation.
 /// Errors:
@@ -14,7 +13,6 @@ pub fn to_json(ffbf: &FFBF) -> Result<String, String> {
 }
 
 /// Deserialize an `FFBF` from a JSON string.
-///
 /// Parameters:
 ///   s: JSON string previously produced by `to_json` or `save`.
 /// Returns:
@@ -26,7 +24,6 @@ pub fn from_json(s: &str) -> Result<FFBF, String> {
 }
 
 /// Write `ffbf` as JSON to `path`, creating or overwriting the file.
-///
 /// Parameters:
 ///   ffbf: Filter to persist.
 ///   path: Destination file path.
@@ -38,7 +35,6 @@ pub fn save(ffbf: &FFBF, path: impl AsRef<Path>) -> Result<(), String> {
 }
 
 /// Load an `FFBF` from a JSON file at `path`.
-///
 /// Parameters:
 ///   path: Path to a file written by `save`.
 /// Returns:

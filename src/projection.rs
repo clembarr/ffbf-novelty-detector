@@ -6,52 +6,55 @@ use serde::{Deserialize, Serialize};
 use crate::config::FFBFConfig;
 
 /// Sparse random projection from input space to KC activations.
-///
-/// Each KC connects to a random subset of input neurons (PNs).
-/// Projection computes KC activations and returns the top-k winner indices.
+/// Each KC connects to a random subset of input neurons (PNs, = fraction of the input).
+/// Projection computes KC activations and returns the top-k winner indices (= hash of the input in the filter).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Projection {
     /// For each KC, sorted indices of connected input neurons.
     pub(crate) connections: Vec<Vec<usize>>,
+    /// Number of active KCs per projection (top-k).
     pub(crate) k: usize,
 }
 
 impl Projection {
     /// Build a sparse random projection from the given config.
-    ///
     /// Parameters:
-    ///   cfg: Validated `FFBFConfig` providing `input_dim`, `m`, `k`, `projection_sparsity`, `seed`.
+    ///   cfg: validated `FFBFConfig` providing `input_dim`, `m`, `k`, `projection_sparsity`, `seed`.
     pub fn new(cfg: &FFBFConfig) -> Self {
-        let fan_in = ((cfg.projection_sparsity * cfg.input_dim as f32).round() as usize).max(1);
-        let mut rng: ChaCha8Rng = match cfg.seed {
+
+        let actual_pns_ratio = ((cfg.projection_sparsity * cfg.input_dim as f32).round() as usize).max(1);
+
+        let mut shuffle_seed: ChaCha8Rng = match cfg.seed {
             Some(s) => ChaCha8Rng::seed_from_u64(s),
             None => ChaCha8Rng::from_entropy(),
         };
         let mut indices: Vec<usize> = (0..cfg.input_dim).collect();
+
         let connections = (0..cfg.m)
             .map(|_| {
-                indices.shuffle(&mut rng);
-                let mut c = indices[..fan_in].to_vec();
+                indices.shuffle(&mut shuffle_seed); // randomize PNs mapping for each KC
+                let mut c = indices[..actual_pns_ratio].to_vec(); // take a slice of the shuffled indices for this KC
                 c.sort_unstable();
                 c
             })
-            .collect();
+            .collect(); 
+
         Self { connections, k: cfg.k }
     }
 
-    /// Project `input` to KC space and return the top-k active KC indices.
-    ///
+    /// Project `input` to KC space and return the top-k activated KC indices.
     /// Parameters:
-    ///   input: Slice of length `input_dim`.
+    ///   input: slice of length `input_dim`.
     /// Returns:
     ///   Sorted vec of `k` KC indices with the highest activation.
     /// Panics:
     ///   If `input.len()` does not match `input_dim` used at construction.
     pub fn project(&self, input: &[f32]) -> Vec<usize> {
-        assert!(
+        debug_assert!(
             self.connections.iter().all(|c| c.iter().all(|&i| i < input.len())),
             "input length {} too small for this projection", input.len()
         );
+
         let mut activations: Vec<(usize, f32)> = self
             .connections
             .iter()
@@ -61,10 +64,11 @@ impl Projection {
                 (kc, act)
             })
             .collect();
-        //partial sort: only top-k needed
+        
         activations.select_nth_unstable_by(self.k, |a, b| b.1.partial_cmp(&a.1).unwrap());
         let mut top_k: Vec<usize> = activations[..self.k].iter().map(|&(kc, _)| kc).collect();
         top_k.sort_unstable();
+        
         top_k
     }
 

@@ -3,8 +3,8 @@ use crate::config::FFBFConfig;
 use crate::decay::{tick_step, DecayMode};
 use crate::projection::Projection;
 
-/// Fruit Fly Bloom Filter — novelty detector based on sparse random projection
-/// and Hebbian-like synaptic weight updates.
+/// Fruit Fly Bloom Filter, novelty detector based on sparse random projection
+/// and Hebbian like synaptic weight updates.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct FFBF {
     pub(crate) cfg: FFBFConfig,
@@ -16,23 +16,23 @@ pub struct FFBF {
 
 impl FFBF {
     /// Build a new FFBF from `cfg`.
-    ///
     /// Parameters:
-    ///   cfg: Hyperparameter config. Must pass `validate()`.
+    ///   cfg: hyperparameter config. Must pass `validate()`.
     /// Returns:
     ///   `Ok(FFBF)` on success.
     /// Errors:
     ///   `Err(String)` if `cfg.validate()` fails.
     pub fn new(cfg: FFBFConfig) -> Result<Self, String> {
         cfg.validate()?;
+
         let projection = Projection::new(&cfg);
         let weights = vec![1.0f32; cfg.m];
         let window = NoveltyWindow::new(cfg.window_size);
+
         Ok(Self { cfg, projection, weights, window })
     }
 
     /// Process one input: score novelty, push to window, then update weights.
-    ///
     /// Parameters:
     ///   input: Slice of length `cfg.input_dim`.
     /// Panics:
@@ -42,9 +42,11 @@ impl FFBF {
             input.len(), self.cfg.input_dim,
             "input length {} != input_dim {}", input.len(), self.cfg.input_dim
         );
+
         let active = self.projection.project(input);
         let score = novelty_score(&self.weights, &active);
         self.window.push(score);
+
         //depress active synapses, recover inactive
         let scale = 1.0 - self.cfg.delta;
         for (i, w) in self.weights.iter_mut().enumerate() {
@@ -56,19 +58,18 @@ impl FFBF {
         }
     }
 
-    /// Passive decay step: move all weights toward 1.0 (or reminiscence peak).
+    /// Passive decay step: move all weights toward 1.0.
     /// No-op when `cfg.decay_mode` is `EdgeOnly`.
     pub fn tick(&mut self) {
         if self.cfg.decay_mode == DecayMode::EdgeOnly {
             return;
         }
         for w in self.weights.iter_mut() {
-            *w = tick_step(*w, self.cfg.tick_rate, self.cfg.reminiscence_factor, &self.cfg.tick_shape, self.cfg.w_max);
+            *w = tick_step(*w, self.cfg.tick_rate, &self.cfg.tick_shape, self.cfg.w_max);
         }
     }
 
     /// Compute novelty score for `input` without modifying state.
-    ///
     /// Parameters:
     ///   input: Slice of length `cfg.input_dim`.
     /// Returns:
@@ -78,12 +79,12 @@ impl FFBF {
             input.len(), self.cfg.input_dim,
             "input length {} != input_dim {}", input.len(), self.cfg.input_dim
         );
+
         let active = self.projection.project(input);
         novelty_score(&self.weights, &active)
     }
 
-    /// Whether `input` is novel relative to the adaptive window baseline.
-    ///
+    /// Whether `input` is novel /!\ RELATIVE TO the adaptive window baseline.
     /// Parameters:
     ///   input: Slice of length `cfg.input_dim`.
     ///   threshold: Multiplier on the window mean; `1.0` = at or above mean.
@@ -145,10 +146,10 @@ mod tests {
         let input = vec![1.0f32; ffbf.cfg.input_dim];
         let active = ffbf.projection.project(&input);
         ffbf.add(&input);
-        //inactive weights were already at w_max=1.0 before first add; epsilon pushes them above 1.0
+        //with default w_max=1.0, inactive weights stay capped at 1.0 (epsilon has no visible effect)
         for (i, &w) in ffbf.weights.iter().enumerate() {
             if active.binary_search(&i).is_err() {
-                assert!(w > 1.0 || (w - ffbf.cfg.w_max).abs() < 1e-6);
+                assert!((w - 1.0).abs() < 1e-6);
             }
         }
     }
