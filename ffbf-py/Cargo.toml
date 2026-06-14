@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "ffbf_py"
 crate-type = ["cdylib"]
 
 [dependencies]
 ffbf = { path = "../ffbf" }
-pyo3 = { version = "0.21", features = ["extension-module"] }
+pyo3 = { version = "0.22", features = ["extension-module"] }
+numpy = "0.22"

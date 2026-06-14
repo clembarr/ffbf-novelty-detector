@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
 #[pymodule]
-fn ffbf_py(_py: Python, _m: &PyModule) -> PyResult<()> {
+fn _core(_m: &Bound<'_, PyModule>) -> PyResult<()> {
     Ok(())
 }
