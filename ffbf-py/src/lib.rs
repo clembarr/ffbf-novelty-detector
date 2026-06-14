@@ -1,4 +1,6 @@
-use ffbf::{DecayMode, FFBFConfig, TickShape};
+use ffbf::{DecayMode, FFBFConfig, TickShape, FFBF};
+use numpy::{IntoPyArray, PyArray1, PyArrayMethods};
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 /// Python-facing enum mirroring [`ffbf::DecayMode`].
@@ -136,10 +138,107 @@ impl PyFFBFConfig {
     #[setter] fn set_seed(&mut self, v: Option<u64>) { self.0.seed = v; }
 }
 
+/// Python-facing wrapper for [`ffbf::FFBF`].
+///
+/// Fruit Fly Bloom Filter — novelty detector based on sparse random projection
+/// and Hebbian-like synaptic weight updates. Build with `FFBF(cfg)` where `cfg`
+/// is a valid `FFBFConfig`.
+#[pyclass(name = "FFBF")]
+#[derive(Debug)]
+pub struct PyFFBF(FFBF);
+
+#[pymethods]
+impl PyFFBF {
+    /// Build a new filter from `cfg`. Raises `ValueError` if config is invalid.
+    #[new]
+    fn new(cfg: Bound<'_, PyFFBFConfig>) -> PyResult<Self> {
+        FFBF::new(cfg.borrow().0.clone()).map(PyFFBF).map_err(|e| PyValueError::new_err(e))
+    }
+
+    fn __repr__(&self) -> String {
+        format!("FFBF(window_len={})", self.0.window_len())
+    }
+
+    /// Process one input: score novelty, push to window, update weights.
+    fn add(&mut self, input: &Bound<'_, PyAny>) -> PyResult<()> {
+        if input.hasattr("dtype")? {
+            //numpy-like: only accept float32
+            let arr = input.cast::<PyArray1<f32>>().map_err(|_| {
+                PyValueError::new_err("expected numpy array with dtype float32")
+            })?;
+            let ro = arr.readonly();
+            let s = ro.as_slice().map_err(|_| {
+                PyValueError::new_err("numpy array must be C-contiguous")
+            })?;
+            self.0.add(s);
+        } else {
+            let v: Vec<f32> = input.extract().map_err(|_| {
+                PyValueError::new_err("expected list[float] or numpy array with dtype float32")
+            })?;
+            self.0.add(&v);
+        }
+        Ok(())
+    }
+
+    /// Compute novelty score for `input` without modifying state.
+    fn novelty(&self, input: &Bound<'_, PyAny>) -> PyResult<f32> {
+        if input.hasattr("dtype")? {
+            let arr = input.cast::<PyArray1<f32>>().map_err(|_| {
+                PyValueError::new_err("expected numpy array with dtype float32")
+            })?;
+            let ro = arr.readonly();
+            let s = ro.as_slice().map_err(|_| {
+                PyValueError::new_err("numpy array must be C-contiguous")
+            })?;
+            Ok(self.0.novelty(s))
+        } else {
+            let v: Vec<f32> = input.extract().map_err(|_| {
+                PyValueError::new_err("expected list[float] or numpy array with dtype float32")
+            })?;
+            Ok(self.0.novelty(&v))
+        }
+    }
+
+    /// Whether `input` is novel relative to the adaptive window baseline.
+    fn is_novel(&self, input: &Bound<'_, PyAny>, threshold: f32) -> PyResult<bool> {
+        if input.hasattr("dtype")? {
+            let arr = input.cast::<PyArray1<f32>>().map_err(|_| {
+                PyValueError::new_err("expected numpy array with dtype float32")
+            })?;
+            let ro = arr.readonly();
+            let s = ro.as_slice().map_err(|_| {
+                PyValueError::new_err("numpy array must be C-contiguous")
+            })?;
+            Ok(self.0.is_novel(s, threshold))
+        } else {
+            let v: Vec<f32> = input.extract().map_err(|_| {
+                PyValueError::new_err("expected list[float] or numpy array with dtype float32")
+            })?;
+            Ok(self.0.is_novel(&v, threshold))
+        }
+    }
+
+    /// Passive decay step: move all weights toward 1.0.
+    fn tick(&mut self) {
+        self.0.tick();
+    }
+
+    /// Current synaptic weights as a float32 numpy array (copied).
+    fn weights<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f32>> {
+        self.0.weights().to_vec().into_pyarray(py)
+    }
+
+    /// Number of scores in the novelty window.
+    fn window_len(&self) -> usize {
+        self.0.window_len()
+    }
+}
+
 #[pymodule]
 fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyDecayMode>()?;
     m.add_class::<PyTickShape>()?;
     m.add_class::<PyFFBFConfig>()?;
+    m.add_class::<PyFFBF>()?;
     Ok(())
 }

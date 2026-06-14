@@ -1,5 +1,6 @@
+import numpy as np
 import pytest
-from ffbf import DecayMode, FFBFConfig, TickShape
+from ffbf import DecayMode, FFBF, FFBFConfig, TickShape
 
 
 def test_decay_mode_variants_exist():
@@ -54,3 +55,94 @@ def test_ffbfconfig_repr():
     r = repr(cfg)
     assert "FFBFConfig" in r
     assert "64" in r
+
+
+def _make_ffbf() -> FFBF:
+    cfg = FFBFConfig.default_for(input_dim=64, expected_n=50)
+    cfg.seed = 42
+    return FFBF(cfg)
+
+
+def test_ffbf_new_valid():
+    f = _make_ffbf()
+    assert f.window_len() == 0
+
+
+def test_ffbf_new_invalid_config_raises():
+    cfg = FFBFConfig.default_for(input_dim=64, expected_n=50)
+    cfg.k = cfg.m
+    with pytest.raises(ValueError):
+        FFBF(cfg)
+
+
+def test_ffbf_add_list():
+    f = _make_ffbf()
+    f.add([0.5] * 64)
+    assert f.window_len() == 1
+
+
+def test_ffbf_add_numpy():
+    f = _make_ffbf()
+    f.add(np.ones(64, dtype=np.float32))
+    assert f.window_len() == 1
+
+
+def test_ffbf_add_wrong_dtype_raises():
+    f = _make_ffbf()
+    with pytest.raises(ValueError):
+        f.add(np.ones(64, dtype=np.float64))
+
+
+def test_ffbf_novelty_fresh_is_one():
+    f = _make_ffbf()
+    score = f.novelty(np.ones(64, dtype=np.float32))
+    assert abs(score - 1.0) < 1e-6
+
+
+def test_ffbf_novelty_decreases_after_adds():
+    f = _make_ffbf()
+    vec = np.ones(64, dtype=np.float32)
+    initial = f.novelty(vec)
+    for _ in range(10):
+        f.add(vec)
+    assert f.novelty(vec) < initial
+
+
+def test_ffbf_is_novel_empty_window():
+    f = _make_ffbf()
+    assert f.is_novel([0.5] * 64, 1.0) is True
+
+
+def test_ffbf_is_novel_false_after_repetition():
+    f = _make_ffbf()
+    vec = [1.0] * 64
+    for _ in range(50):
+        f.add(vec)
+    assert f.is_novel(vec, 1.0) is False
+
+
+def test_ffbf_weights_returns_float32_numpy():
+    f = _make_ffbf()
+    w = f.weights()
+    assert isinstance(w, np.ndarray)
+    assert w.dtype == np.float32
+
+
+def test_ffbf_weights_are_copy():
+    f = _make_ffbf()
+    w = f.weights()
+    w[0] = 999.0
+    assert f.weights()[0] != 999.0
+
+
+def test_ffbf_tick_no_op_edge_only():
+    f = _make_ffbf()
+    f.add(np.ones(64, dtype=np.float32))
+    before = f.weights().copy()
+    f.tick()
+    np.testing.assert_array_equal(f.weights(), before)
+
+
+def test_ffbf_repr():
+    f = _make_ffbf()
+    assert "FFBF" in repr(f)
