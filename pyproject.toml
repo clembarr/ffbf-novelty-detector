@@ -1,0 +1,18 @@
+[build-system]
+requires = ["maturin>=1.4,<2"]
+build-backend = "maturin"
+
+[project]
+name = "ffbf"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+viz = ["matplotlib"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "ffbf._core"
+manifest-path = "ffbf-py/Cargo.toml"
+features = ["pyo3/extension-module"]
