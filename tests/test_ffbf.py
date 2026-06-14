@@ -1,5 +1,5 @@
 import pytest
-from ffbf import DecayMode, TickShape
+from ffbf import DecayMode, FFBFConfig, TickShape
 
 
 def test_decay_mode_variants_exist():
@@ -21,9 +21,6 @@ def test_tick_shape_variants_exist():
 def test_tick_shape_equality():
     assert TickShape.Exp == TickShape.Exp
     assert TickShape.Lin != TickShape.Log
-
-
-from ffbf import FFBFConfig, DecayMode, TickShape
 
 
 def test_ffbfconfig_default_for():

@@ -72,7 +72,7 @@ impl From<TickShape> for PyTickShape {
 /// Holds all hyperparameters for the FFBF filter. Build a default config with
 /// `FFBFConfig.default_for(input_dim, expected_n)`, then adjust fields as needed
 /// before passing to `FFBF(cfg)`.
-#[pyclass(name = "FFBFConfig", from_py_object)]
+#[pyclass(name = "FFBFConfig", skip_from_py_object)]
 #[derive(Clone, Debug)]
 pub struct PyFFBFConfig(pub(crate) FFBFConfig);
 
