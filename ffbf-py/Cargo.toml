@@ -8,5 +8,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 ffbf = { path = "../ffbf" }
-pyo3 = { version = "0.22", features = ["extension-module"] }
-numpy = "0.22"
+pyo3 = { version = "0.29", features = ["extension-module"] }
+numpy = "0.29"
