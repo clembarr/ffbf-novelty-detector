@@ -1,3 +1,3 @@
-from ffbf._core import DecayMode, TickShape
+from ffbf._core import DecayMode, FFBFConfig, TickShape
 
-__all__ = ["DecayMode", "TickShape"]
+__all__ = ["DecayMode", "FFBFConfig", "TickShape"]

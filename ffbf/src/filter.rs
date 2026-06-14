@@ -103,6 +103,11 @@ impl FFBF {
     pub fn window_len(&self) -> usize {
         self.window.len()
     }
+
+    /// Returns a reference to the hyperparameter config.
+    pub fn cfg(&self) -> &FFBFConfig {
+        &self.cfg
+    }
 }
 
 #[cfg(test)]
