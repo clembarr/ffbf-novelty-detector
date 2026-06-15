@@ -145,7 +145,7 @@ impl PyFFBFConfig {
 /// and Hebbian-like synaptic weight updates. Build with `FFBF(cfg)` where `cfg`
 /// is a valid `FFBFConfig`.
 #[pyclass(name = "FFBF")]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PyFFBF(FFBF);
 
 #[pymethods]
@@ -202,6 +202,7 @@ impl PyFFBF {
     }
 
     /// Whether `input` is novel relative to the adaptive window baseline.
+    #[pyo3(signature = (input, threshold = 1.0))]
     fn is_novel(&self, input: &Bound<'_, PyAny>, threshold: f32) -> PyResult<bool> {
         if input.hasattr("dtype")? {
             let arr = input.cast::<PyArray1<f32>>().map_err(|_| {
