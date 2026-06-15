@@ -9,22 +9,32 @@ if TYPE_CHECKING:
 
 def plot_novelty_scores(
     scores: list[float],
+    phases: list[tuple[int, str]] | None =None,
     ax: Axes | None =None
 ) -> Axes:
     """Line plot of novelty scores over time.
     Parameters:
         scores (list[float]): novelty score at each time step
+        phases (list[tuple[int, str]] | None): vertical markers as (step_index, label) pairs
         ax (Axes | None): matplotlib axes to draw on; created if None
     Returns:
         Axes: the axes used for plotting
     """
     import matplotlib.pyplot as plt
+    import matplotlib.ticker as ticker
     if ax is None:
         _, ax = plt.subplots()
     ax.plot(scores)
     ax.set_xlabel("Step")
     ax.set_ylabel("Novelty score")
     ax.set_title("Novelty scores over time")
+    ax.set_ylim(0, 1.05)
+    ax.set_yticks(np.linspace(0, 1, 11))
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=10))
+    if phases:
+        for idx, label in phases:
+            ax.axvline(x=idx, color="gray", linestyle="--", linewidth=1)
+            ax.text(idx + 0.2, 0.97, label, fontsize=8, color="gray", va="top")
     return ax
 
 

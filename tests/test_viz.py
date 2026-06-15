@@ -44,3 +44,21 @@ def test_plot_weight_evolution_all_indices():
     ax = plot_weight_evolution(history)
     assert ax is not None
     plt.close("all")
+
+
+def test_plot_novelty_scores_with_phases():
+    import matplotlib.pyplot as plt
+    ax = plot_novelty_scores(
+        [0.9, 0.8, 0.5, 0.4, 0.9, 0.7, 0.4],
+        phases=[(3, "Phase II"), (4, "Phase III")],
+    )
+    #axvlines are Line2D objects; data line + 2 phase lines = 3 lines minimum
+    assert len(ax.get_lines()) >= 3
+    plt.close("all")
+
+
+def test_plot_novelty_scores_phases_none_unchanged():
+    import matplotlib.pyplot as plt
+    ax = plot_novelty_scores([0.9, 0.5, 0.2], phases=None)
+    assert len(ax.get_lines()) == 1
+    plt.close("all")
