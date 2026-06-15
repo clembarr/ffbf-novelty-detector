@@ -5,6 +5,7 @@ import numpy as np
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
+    from mpl_toolkits.mplot3d import Axes3D
 
 
 def plot_novelty_scores(
@@ -88,4 +89,54 @@ def plot_weight_evolution(
     ax.set_title("Weight evolution")
     if len(indices) <= 10:
         ax.legend()
+    return ax
+
+
+def _pca(X: np.ndarray, n_components: int =3) -> np.ndarray:
+    #project X onto its top n_components principal axes via truncated SVD
+    X_c = X - X.mean(axis=0)
+    _, _, Vt = np.linalg.svd(X_c, full_matrices=False)
+    return X_c @ Vt[:n_components].T
+
+
+def plot_embedding_3d(
+    embeddings: np.ndarray,
+    labels: list[str],
+    novelty_scores: list[float],
+    ax: Axes3D | None =None
+) -> Axes3D:
+    """3D scatter of embeddings projected to 3 PCA components.
+    Parameters:
+        embeddings (np.ndarray): shape (n, d) float32 embedding matrix
+        labels (list[str]): domain label per point, used for color grouping
+        novelty_scores (list[float]): novelty score per point in [0, 1], controls marker size
+        ax (Axes3D | None): 3D axes; created if None
+    Returns:
+        Axes3D: the 3D axes used for plotting
+    Raises:
+        ValueError: if embeddings has fewer than 3 columns
+    """
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D as _Axes3D  # noqa: F401 — registers "3d" projection
+    if embeddings.shape[1] < 3:
+        raise ValueError(f"embeddings must have at least 3 columns, got {embeddings.shape[1]}")
+    if ax is None:
+        ax = plt.figure().add_subplot(projection="3d")
+    proj = _pca(embeddings.astype(np.float64))
+    unique_labels = sorted(set(labels))
+    cmap = plt.cm.tab10
+    colors = {lbl: cmap(i / max(len(unique_labels) - 1, 1)) for i, lbl in enumerate(unique_labels)}
+    sizes = np.array(novelty_scores) * 80 + 20
+    label_arr = np.array(labels)
+    for lbl in unique_labels:
+        mask = label_arr == lbl
+        ax.scatter(
+            proj[mask, 0], proj[mask, 1], proj[mask, 2],
+            s=sizes[mask], color=colors[lbl], label=lbl, alpha=0.8,
+        )
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3")
+    ax.set_title("Embedding space (PCA 3D)")
+    ax.legend()
     return ax

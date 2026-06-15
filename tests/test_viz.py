@@ -4,7 +4,7 @@ import pytest
 matplotlib = pytest.importorskip("matplotlib")
 matplotlib.use("Agg")
 
-from ffbf.viz import plot_novelty_scores, plot_weight_state, plot_weight_evolution
+from ffbf.viz import plot_novelty_scores, plot_weight_state, plot_weight_evolution, plot_embedding_3d
 
 
 def test_plot_novelty_scores_creates_axes():
@@ -78,4 +78,25 @@ def test_plot_novelty_scores_phases_none_unchanged():
     import matplotlib.pyplot as plt
     ax = plot_novelty_scores([0.9, 0.5, 0.2], phases=None)
     assert len(ax.get_lines()) == 1
+    plt.close("all")
+
+
+def test_plot_embedding_3d_creates_axes():
+    import matplotlib.pyplot as plt
+    embeddings = np.random.rand(20, 8).astype(np.float32)
+    labels = ["tech"] * 10 + ["cuisine"] * 10
+    novelty = [0.5] * 20
+    ax = plot_embedding_3d(embeddings, labels, novelty)
+    assert ax is not None
+    plt.close("all")
+
+
+def test_plot_embedding_3d_accepts_ax():
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    ax_in = fig.add_subplot(projection="3d")
+    embeddings = np.random.rand(10, 6).astype(np.float32)
+    labels = ["a"] * 5 + ["b"] * 5
+    ax_out = plot_embedding_3d(embeddings, labels, [0.5] * 10, ax=ax_in)
+    assert ax_out is ax_in
     plt.close("all")
