@@ -1,0 +1,46 @@
+import numpy as np
+import pytest
+
+matplotlib = pytest.importorskip("matplotlib")
+matplotlib.use("Agg")
+
+from ffbf.viz import plot_novelty_scores, plot_weight_distribution, plot_weight_evolution
+
+
+def test_plot_novelty_scores_creates_axes():
+    import matplotlib.pyplot as plt
+    ax = plot_novelty_scores([0.9, 0.7, 0.5, 0.4, 0.4])
+    assert ax is not None
+    plt.close("all")
+
+
+def test_plot_novelty_scores_accepts_ax():
+    import matplotlib.pyplot as plt
+    _, ax_in = plt.subplots()
+    ax_out = plot_novelty_scores([0.5, 0.4], ax=ax_in)
+    assert ax_out is ax_in
+    plt.close("all")
+
+
+def test_plot_weight_distribution_creates_axes():
+    import matplotlib.pyplot as plt
+    weights = np.random.rand(200).astype(np.float32)
+    ax = plot_weight_distribution(weights)
+    assert ax is not None
+    plt.close("all")
+
+
+def test_plot_weight_evolution_creates_axes():
+    import matplotlib.pyplot as plt
+    history = np.random.rand(20, 50).astype(np.float32)
+    ax = plot_weight_evolution(history, indices=[0, 1, 2])
+    assert ax is not None
+    plt.close("all")
+
+
+def test_plot_weight_evolution_all_indices():
+    import matplotlib.pyplot as plt
+    history = np.random.rand(5, 10).astype(np.float32)
+    ax = plot_weight_evolution(history)
+    assert ax is not None
+    plt.close("all")
