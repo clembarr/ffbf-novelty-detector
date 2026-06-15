@@ -58,7 +58,7 @@ def plot_weight_state(
     ax.set_xlabel("KC index")
     ax.set_ylabel("Weight")
     ax.set_title(title if title is not None else "Synaptic weight state")
-    ax.set_xlim(0, len(weights))
+    ax.set_xlim(-0.5, len(weights) - 0.5)
     ax.set_ylim(0, 1.05)
     return ax
 
