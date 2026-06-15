@@ -4,7 +4,7 @@ import pytest
 matplotlib = pytest.importorskip("matplotlib")
 matplotlib.use("Agg")
 
-from ffbf.viz import plot_novelty_scores, plot_weight_distribution, plot_weight_evolution
+from ffbf.viz import plot_novelty_scores, plot_weight_state, plot_weight_evolution
 
 
 def test_plot_novelty_scores_creates_axes():
@@ -22,11 +22,28 @@ def test_plot_novelty_scores_accepts_ax():
     plt.close("all")
 
 
-def test_plot_weight_distribution_creates_axes():
+def test_plot_weight_state_creates_axes():
     import matplotlib.pyplot as plt
     weights = np.random.rand(200).astype(np.float32)
-    ax = plot_weight_distribution(weights)
+    ax = plot_weight_state(weights)
     assert ax is not None
+    plt.close("all")
+
+
+def test_plot_weight_state_accepts_title():
+    import matplotlib.pyplot as plt
+    weights = np.ones(50, dtype=np.float32) * 0.5
+    ax = plot_weight_state(weights, title="After Act I")
+    assert ax.get_title() == "After Act I"
+    plt.close("all")
+
+
+def test_plot_weight_state_accepts_ax():
+    import matplotlib.pyplot as plt
+    _, ax_in = plt.subplots()
+    weights = np.random.rand(100).astype(np.float32)
+    ax_out = plot_weight_state(weights, ax=ax_in)
+    assert ax_out is ax_in
     plt.close("all")
 
 

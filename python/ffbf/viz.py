@@ -38,13 +38,15 @@ def plot_novelty_scores(
     return ax
 
 
-def plot_weight_distribution(
+def plot_weight_state(
     weights: np.ndarray,
+    title: str | None =None,
     ax: Axes | None =None
 ) -> Axes:
-    """Histogram of synaptic weight values at a point in time.
+    """Bar chart of KC synaptic weights at a point in time.
     Parameters:
-        weights (np.ndarray): 1D float32 array of synaptic weights
+        weights (np.ndarray): 1D float32 array of KC weights, one bar per KC
+        title (str | None): axes title; defaults to "Synaptic weight state"
         ax (Axes | None): matplotlib axes; created if None
     Returns:
         Axes: the axes used for plotting
@@ -52,10 +54,12 @@ def plot_weight_distribution(
     import matplotlib.pyplot as plt
     if ax is None:
         _, ax = plt.subplots()
-    ax.hist(weights, bins=30)
-    ax.set_xlabel("Weight")
-    ax.set_ylabel("Count")
-    ax.set_title("Synaptic weight distribution")
+    ax.bar(np.arange(len(weights)), weights, width=1.0, linewidth=0)
+    ax.set_xlabel("KC index")
+    ax.set_ylabel("Weight")
+    ax.set_title(title if title is not None else "Synaptic weight state")
+    ax.set_xlim(0, len(weights))
+    ax.set_ylim(0, 1.05)
     return ax
 
 
