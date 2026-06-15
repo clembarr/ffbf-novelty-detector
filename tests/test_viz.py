@@ -100,3 +100,12 @@ def test_plot_embedding_3d_accepts_ax():
     ax_out = plot_embedding_3d(embeddings, labels, [0.5] * 10, ax=ax_in)
     assert ax_out is ax_in
     plt.close("all")
+
+
+def test_plot_embedding_3d_raises_on_too_few_columns():
+    with pytest.raises(ValueError, match="at least 3 columns"):
+        plot_embedding_3d(
+            np.ones((5, 2), dtype=np.float32),
+            ["a"] * 5,
+            [0.5] * 5,
+        )

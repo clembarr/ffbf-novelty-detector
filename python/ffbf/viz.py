@@ -93,7 +93,7 @@ def plot_weight_evolution(
 
 
 def _pca(X: np.ndarray, n_components: int =3) -> np.ndarray:
-    #project X onto its top n_components principal axes via truncated SVD
+    #project X onto its top n_components principal axes via thin SVD
     X_c = X - X.mean(axis=0)
     _, _, Vt = np.linalg.svd(X_c, full_matrices=False)
     return X_c @ Vt[:n_components].T
@@ -122,10 +122,10 @@ def plot_embedding_3d(
         raise ValueError(f"embeddings must have at least 3 columns, got {embeddings.shape[1]}")
     if ax is None:
         ax = plt.figure().add_subplot(projection="3d")
-    proj = _pca(embeddings.astype(np.float64))
+    proj = _pca(embeddings)
     unique_labels = sorted(set(labels))
     cmap = plt.cm.tab10
-    colors = {lbl: cmap(i / max(len(unique_labels) - 1, 1)) for i, lbl in enumerate(unique_labels)}
+    colors = {lbl: cmap(i % 10) for i, lbl in enumerate(unique_labels)}
     sizes = np.array(novelty_scores) * 80 + 20
     label_arr = np.array(labels)
     for lbl in unique_labels:
