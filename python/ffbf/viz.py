@@ -1,15 +1,20 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 
 def plot_novelty_scores(
     scores: list[float],
-    ax =None
-):
+    ax: Axes | None =None
+) -> Axes:
     """Line plot of novelty scores over time.
     Parameters:
         scores (list[float]): novelty score at each time step
-        ax (Axes): matplotlib axes to draw on; created if None
+        ax (Axes | None): matplotlib axes to draw on; created if None
     Returns:
         Axes: the axes used for plotting
     """
@@ -25,12 +30,12 @@ def plot_novelty_scores(
 
 def plot_weight_distribution(
     weights: np.ndarray,
-    ax =None
-):
+    ax: Axes | None =None
+) -> Axes:
     """Histogram of synaptic weight values at a point in time.
     Parameters:
         weights (np.ndarray): 1D float32 array of synaptic weights
-        ax (Axes): matplotlib axes; created if None
+        ax (Axes | None): matplotlib axes; created if None
     Returns:
         Axes: the axes used for plotting
     """
@@ -46,14 +51,14 @@ def plot_weight_distribution(
 
 def plot_weight_evolution(
     weight_history: np.ndarray,
-    indices: list[int] =None,
-    ax =None
-):
+    indices: list[int] | None =None,
+    ax: Axes | None =None
+) -> Axes:
     """Line plot of selected KC weights over time.
     Parameters:
         weight_history (np.ndarray): shape (n_steps, m) — weights captured at each step
-        indices (list[int]): KC indices to plot; all KCs if None
-        ax (Axes): matplotlib axes; created if None
+        indices (list[int] | None): KC indices to plot; all KCs if None
+        ax (Axes | None): matplotlib axes; created if None
     Returns:
         Axes: the axes used for plotting
     """
