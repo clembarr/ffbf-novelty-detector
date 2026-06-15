@@ -86,6 +86,7 @@ impl PyFFBFConfig {
         PyFFBFConfig(FFBFConfig::default_for(input_dim, expected_n))
     }
 
+    /// Returns a string representation for `repr()`.
     fn __repr__(&self) -> String {
         format!(
             "FFBFConfig(input_dim={}, m={}, k={}, delta={:.3}, epsilon={:.3})",
@@ -155,6 +156,7 @@ impl PyFFBF {
         FFBF::new(cfg.borrow().0.clone()).map(PyFFBF).map_err(|e| PyValueError::new_err(e))
     }
 
+    /// Returns a string representation for `repr()`.
     fn __repr__(&self) -> String {
         format!("FFBF(window_len={})", self.0.window_len())
     }
