@@ -1,3 +1,7 @@
+import json
+import os
+import tempfile
+
 import numpy as np
 import pytest
 from ffbf import DecayMode, FFBF, FFBFConfig, TickShape
@@ -146,3 +150,44 @@ def test_ffbf_tick_no_op_edge_only():
 def test_ffbf_repr():
     f = _make_ffbf()
     assert "FFBF" in repr(f)
+
+
+def test_ffbf_to_json_is_valid_json():
+    f = _make_ffbf()
+    f.add(np.ones(64, dtype=np.float32))
+    j = f.to_json()
+    parsed = json.loads(j)
+    assert "weights" in parsed
+
+
+def test_ffbf_from_json_roundtrip():
+    f = _make_ffbf()
+    vec = np.ones(64, dtype=np.float32)
+    f.add(vec)
+    j = f.to_json()
+    f2 = FFBF.from_json(j)
+    assert abs(f.novelty(vec) - f2.novelty(vec)) < 1e-6
+    assert f.window_len() == f2.window_len()
+
+
+def test_ffbf_from_json_invalid_raises():
+    with pytest.raises(ValueError):
+        FFBF.from_json("not json")
+
+
+def test_ffbf_save_load_roundtrip():
+    f = _make_ffbf()
+    f.add(np.ones(64, dtype=np.float32))
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
+        path = tmp.name
+    try:
+        f.save(path)
+        f2 = FFBF.load(path)
+        np.testing.assert_array_almost_equal(f.weights(), f2.weights())
+    finally:
+        os.unlink(path)
+
+
+def test_ffbf_load_invalid_path_raises():
+    with pytest.raises(ValueError):
+        FFBF.load("/nonexistent/path/ffbf.json")

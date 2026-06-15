@@ -1,4 +1,4 @@
-use ffbf::{DecayMode, FFBFConfig, TickShape, FFBF};
+use ffbf::{from_json, load, save, to_json, DecayMode, FFBFConfig, TickShape, FFBF};
 use numpy::{IntoPyArray, PyArray1, PyArrayMethods};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -233,6 +233,28 @@ impl PyFFBF {
     /// Number of scores in the novelty window.
     fn window_len(&self) -> usize {
         self.0.window_len()
+    }
+
+    /// Serialize this filter to a JSON string.
+    fn to_json(&self) -> PyResult<String> {
+        to_json(&self.0).map_err(PyValueError::new_err)
+    }
+
+    /// Deserialize an FFBF from a JSON string produced by `to_json()`.
+    #[staticmethod]
+    fn from_json(s: &str) -> PyResult<Self> {
+        from_json(s).map(PyFFBF).map_err(PyValueError::new_err)
+    }
+
+    /// Write this filter as JSON to `path`.
+    fn save(&self, path: &str) -> PyResult<()> {
+        save(&self.0, path).map_err(PyValueError::new_err)
+    }
+
+    /// Load an FFBF from a JSON file at `path`.
+    #[staticmethod]
+    fn load(path: &str) -> PyResult<Self> {
+        load(path).map(PyFFBF).map_err(PyValueError::new_err)
     }
 }
 
