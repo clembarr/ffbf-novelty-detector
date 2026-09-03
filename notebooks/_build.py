@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Run from repo root: python notebooks/_build.py"""
+"""Generates notebooks/ffbf_semantic_demo.ipynb. Run from repo root: python notebooks/_build.py"""
 import os
 import nbformat as nbf
 
 os.makedirs("notebooks", exist_ok=True)
 
-nb = nbf.v4.new_notebook()
+nb: nbf.NotebookNode = nbf.v4.new_notebook()
 nb.metadata = {
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
     "language_info": {"name": "python", "version": "3.9.0"},
 }
 
-TECH = [
+TECH: list[str] = [
     "GPUs are essential for training deep neural networks.",
     "Rust's borrow checker prevents data races at compile time.",
     "Transformers revolutionized natural language processing.",
@@ -39,7 +39,7 @@ TECH = [
     "Reinforcement learning agents maximize cumulative reward through trial and error.",
 ]
 
-CUISINE = [
+CUISINE: list[str] = [
     "Al dente pasta requires well-salted boiling water.",
     "Maillard reaction gives browned food its distinctive flavor.",
     "Mise en place means having all ingredients prepped before cooking begins.",
@@ -69,14 +69,16 @@ CUISINE = [
 
 
 def md(src: str) -> nbf.NotebookNode:
+    """Create a markdown notebook cell."""
     return nbf.v4.new_markdown_cell(src)
 
 
 def code(src: str) -> nbf.NotebookNode:
+    """Create a code notebook cell."""
     return nbf.v4.new_code_cell(src)
 
 
-nb.cells = [
+cells: list[nbf.NotebookNode] = [
     # ── Title ──────────────────────────────────────────────────────────────────
     md(
         "# 🪰 ffbf — Novelty Detection on a Semantic Stream\n\n"
@@ -248,7 +250,12 @@ nb.cells = [
     ),
     code(
         "def run_scenario(override_cfg: FFBFConfig) -> tuple[list[float], list[float]]:\n"
-        '    """Run tech→cuisine scenario, returning (scores_tech, scores_cuisine)."""\n'
+        '    """Run tech→cuisine scenario.\n'
+        '    Parameters:\n'
+        '        override_cfg (FFBFConfig): filter configuration to test.\n'
+        '    Returns\n'
+        '        tuple[list[float], list[float]]: tech novelty scores, then cuisine novelty scores.\n'
+        '    """\n'
         "    flocal = FFBF(override_cfg)\n"
         "    s_tech: list[float] = []\n"
         "    for vec in tech_emb:\n"
@@ -266,7 +273,7 @@ nb.cells = [
         "Higher `delta` depresses active synapses faster → the filter learns sooner."
     ),
     code(
-        "deltas = [0.1, 0.3, 0.7]\n"
+        "deltas: list[float] = [0.1, 0.3, 0.7]\n"
         "fig, axes = plt.subplots(1, 3, figsize=(15, 4))\n"
         "for ax, d in zip(axes, deltas):\n"
         "    c = FFBFConfig.default_for(input_dim=384, expected_n=50)\n"
@@ -284,8 +291,8 @@ nb.cells = [
     ),
     md("### 6.2 Impact of `tick_shape` — forgetting curve"),
     code(
-        "shapes = [TickShape.Lin, TickShape.Exp, TickShape.Log]\n"
-        'shape_names = ["Lin", "Exp", "Log"]\n'
+        "shapes: list[TickShape] = [TickShape.Lin, TickShape.Exp, TickShape.Log]\n"
+        'shape_names: list[str] = ["Lin", "Exp", "Log"]\n'
         "fig, axes = plt.subplots(1, 3, figsize=(15, 4))\n"
         "for ax, shape, name in zip(axes, shapes, shape_names):\n"
         "    c = FFBFConfig.default_for(input_dim=384, expected_n=50)\n"
@@ -307,7 +314,7 @@ nb.cells = [
         "A smaller window reacts faster to score changes."
     ),
     code(
-        "windows = [10, 50, 100]\n"
+        "windows: list[int] = [10, 50, 100]\n"
         "fig, axes = plt.subplots(1, 3, figsize=(15, 4))\n"
         "for ax, ws in zip(axes, windows):\n"
         "    c = FFBFConfig.default_for(input_dim=384, expected_n=50)\n"
@@ -335,6 +342,7 @@ nb.cells = [
         "plt.show()"
     ),
 ]
+nb.cells = cells
 
 with open("notebooks/ffbf_semantic_demo.ipynb", "w") as fout:
     nbf.write(nb, fout)

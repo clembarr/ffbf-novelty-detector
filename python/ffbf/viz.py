@@ -106,20 +106,26 @@ def plot_embedding_3d(
     ax: Axes3D | None =None
 ) -> Axes3D:
     """3D scatter of embeddings projected to 3 PCA components.
+    Colors are assigned per unique label via tab10 (up to 10 distinct labels before hues repeat).
     Parameters:
         embeddings (np.ndarray): shape (n, d) float32 embedding matrix
-        labels (list[str]): domain label per point, used for color grouping
-        novelty_scores (list[float]): novelty score per point in [0, 1], controls marker size
+        labels (list[str]): domain label per point, length must equal n, used for color grouping
+        novelty_scores (list[float]): novelty score per point in [0, 1], length must equal n, controls marker size
         ax (Axes3D | None): 3D axes; created if None
     Returns:
         Axes3D: the 3D axes used for plotting
     Raises:
-        ValueError: if embeddings has fewer than 3 columns
+        ValueError: if embeddings has fewer than 3 columns, or if labels/novelty_scores length differs from n
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D as _Axes3D  # noqa: F401 — registers "3d" projection
+    n: int = len(embeddings)
     if embeddings.shape[1] < 3:
         raise ValueError(f"embeddings must have at least 3 columns, got {embeddings.shape[1]}")
+    if len(labels) != n:
+        raise ValueError(f"labels length {len(labels)} != embeddings rows {n}")
+    if len(novelty_scores) != n:
+        raise ValueError(f"novelty_scores length {len(novelty_scores)} != embeddings rows {n}")
     if ax is None:
         ax = plt.figure().add_subplot(projection="3d")
     proj = _pca(embeddings)

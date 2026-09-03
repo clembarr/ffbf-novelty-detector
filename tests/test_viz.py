@@ -109,3 +109,21 @@ def test_plot_embedding_3d_raises_on_too_few_columns():
             ["a"] * 5,
             [0.5] * 5,
         )
+
+
+def test_plot_embedding_3d_raises_on_labels_length_mismatch():
+    with pytest.raises(ValueError, match="labels length"):
+        plot_embedding_3d(
+            np.ones((5, 4), dtype=np.float32),
+            ["a"] * 3,
+            [0.5] * 5,
+        )
+
+
+def test_plot_embedding_3d_raises_on_novelty_length_mismatch():
+    with pytest.raises(ValueError, match="novelty_scores length"):
+        plot_embedding_3d(
+            np.ones((5, 4), dtype=np.float32),
+            ["a"] * 5,
+            [0.5] * 3,
+        )
