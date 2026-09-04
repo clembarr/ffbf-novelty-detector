@@ -36,10 +36,11 @@ impl From<DecayMode> for PyDecayMode {
 
 /// Python-facing enum mirroring [`ffbf::TickShape`].
 ///
-/// Shape of the tick decay curve, affecting how weights return to target value over time.
-/// - `Lin`: Constant speed toward the target.
-/// - `Exp`: Decays quickly at the start, then slower at the end.
-/// - `Log`: Decays slowly at the start, then faster at the end.
+/// Shape of the tick decay curve: how the forgetting speed depends on the current weight.
+/// A low weight is a freshly learned memory, a weight near 1.0 one that is already almost forgotten.
+/// - `Lin`: uniform step, every synapse forgets at the same absolute speed.
+/// - `Exp`: step scaled by the weight — a fresh memory barely moves, an old one accelerates away.
+/// - `Log`: step scaled by the distance left — a fresh memory fades fast, then a long tail.
 //skip_from_py_object prevents auto-generated FromPyObject impl that conflicts with the From<T> conversions used for Rust↔Python round-tripping
 #[pyclass(name = "TickShape", eq, skip_from_py_object)]
 #[derive(Clone, PartialEq, Debug)]

@@ -54,7 +54,7 @@ if filter.is_novel(&input, 1.0) {
 | `epsilon` | `0.05` | [0, 1] | Recovery increment of inactive synapses on `add()` |
 | `w_max` | `1.0` | ≥ 1.0 | Weight ceiling for inactive synapse recovery |
 | `decay_mode` | `EdgeOnly` | - | `EdgeOnly`: activity-driven only; `EdgeAndFront`: also time-driven via `tick()` |
-| `tick_shape` | `Lin` | - | `Lin` / `Exp` / `Log` - shape of passive recovery curve |
+| `tick_shape` | `Lin` | - | Which memories fade first: `Lin` all alike, `Exp` keeps fresh ones longest, `Log` drops them first |
 | `tick_rate` | `0.01` | > 0 | Speed of passive weight recovery per `tick()` call |
 | `window_size` | `100` | ≥ 2 | Ring-buffer depth for `is_novel()` adaptive baseline |
 | `seed` | `None` | - | Fix RNG seed for deterministic projection matrix |
@@ -64,6 +64,8 @@ if filter.is_novel(&input, 1.0) {
 **`EdgeOnly`** (default): weights only change on `add()`. Memory is purely activity-driven; `tick()` won't do anything.
 
 **`EdgeAndFront`**: `tick()` additionally moves all weights passively toward `1.0` according to `tick_shape` and `tick_rate`. Familiar inputs eventually become novel again.
+
+`tick_rate` is a coefficient and `tick_shape` decides what it multiplies — `Lin` a constant, `Exp` the weight itself, `Log` the distance left to `1.0`. So `Exp` gives long retention followed by a fast wipe, `Log` a sharp initial drop followed by a long tail, and `Lin` treats every synapse alike.
 
 ```rust
 use ffbf::{FFBFConfig, DecayMode, TickShape};

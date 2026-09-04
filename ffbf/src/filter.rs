@@ -1,6 +1,6 @@
 use crate::analysis::{novelty_score, NoveltyWindow};
 use crate::config::FFBFConfig;
-use crate::decay::{tick_step, DecayMode};
+use crate::decay::{tick_step, DecayMode, MIN_WEIGHT};
 use crate::projection::Projection;
 
 /// Fruit Fly Bloom Filter, novelty detector based on sparse random projection
@@ -51,7 +51,9 @@ impl FFBF {
         let scale = 1.0 - self.cfg.delta;
         for (i, w) in self.weights.iter_mut().enumerate() {
             if active.binary_search(&i).is_ok() {
-                *w *= scale;
+                //floored: repeated depression underflows to 0.0 in f32, which TickShape::Exp
+                //could never recover from since its step is proportional to the weight
+                *w = (*w * scale).max(MIN_WEIGHT);
             } else {
                 *w = (*w + self.cfg.epsilon).min(self.cfg.w_max);
             }
@@ -157,6 +159,22 @@ mod tests {
                 assert!((w - 1.0).abs() < 1e-6);
             }
         }
+    }
+
+    #[test]
+    fn add_never_drives_weight_to_zero() {
+        let mut cfg = cfg_base();
+        cfg.delta = 0.95;
+        let mut ffbf = FFBF::new(cfg).unwrap();
+        let input = vec![1.0f32; ffbf.cfg.input_dim];
+        //without a floor this underflows to exactly 0.0, which Exp could never recover from
+        for _ in 0..100 {
+            ffbf.add(&input);
+        }
+        assert!(
+            ffbf.weights().iter().all(|&w| w >= MIN_WEIGHT),
+            "a weight fell below MIN_WEIGHT: {:?}", ffbf.weights().iter().cloned().fold(f32::MAX, f32::min)
+        );
     }
 
     #[test]
