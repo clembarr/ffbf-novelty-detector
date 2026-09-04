@@ -127,3 +127,12 @@ def test_plot_embedding_3d_raises_on_novelty_length_mismatch():
             ["a"] * 5,
             [0.5] * 3,
         )
+
+
+def test_plot_novelty_scores_label_enables_legend():
+    import matplotlib.pyplot as plt
+    _, ax = plt.subplots()
+    plot_novelty_scores([0.9, 0.7], label="Lin", ax=ax)
+    plot_novelty_scores([0.8, 0.6], label="Exp", ax=ax)
+    assert [line.get_label() for line in ax.get_lines()] == ["Lin", "Exp"]
+    plt.close("all")

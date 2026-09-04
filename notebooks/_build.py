@@ -289,22 +289,27 @@ cells: list[nbf.NotebookNode] = [
         "plt.tight_layout()\n"
         "plt.show()"
     ),
-    md("### 6.2 Impact of `tick_shape` — forgetting curve"),
+    md(
+        "### 6.2 Impact of `tick_shape` — forgetting curve\n\n"
+        "`tick()` restores weights toward 1.0 following the chosen curve. The three shapes are "
+        "plotted on a single axes: at `tick_rate = 0.02` they are indistinguishable, so a stronger "
+        "`tick_rate = 0.2` is used here to make the difference visible. `Lin` forgets fastest "
+        "(scores stay highest), `Exp` slowest."
+    ),
     code(
         "shapes: list[TickShape] = [TickShape.Lin, TickShape.Exp, TickShape.Log]\n"
         'shape_names: list[str] = ["Lin", "Exp", "Log"]\n'
-        "fig, axes = plt.subplots(1, 3, figsize=(15, 4))\n"
-        "for ax, shape, name in zip(axes, shapes, shape_names):\n"
+        "fig, ax = plt.subplots(figsize=(10, 5))\n"
+        "for shape, name in zip(shapes, shape_names):\n"
         "    c = FFBFConfig.default_for(input_dim=384, expected_n=50)\n"
         "    c.delta = 0.4\n"
         "    c.decay_mode = DecayMode.EdgeAndFront\n"
         "    c.tick_shape = shape\n"
-        "    c.tick_rate = 0.02\n"
+        "    c.tick_rate = 0.2\n"
         "    c.seed = 42\n"
         "    s_t, s_c = run_scenario(c)\n"
-        '    plot_novelty_scores(s_t + s_c, phases=[(25, "Cuisine")], ax=ax)\n'
-        '    ax.set_title(f"tick_shape = {name}")\n'
-        'plt.suptitle("Impact of tick_shape (forgetting curve)", y=1.02)\n'
+        '    plot_novelty_scores(s_t + s_c, phases=[(25, "Cuisine")], label=name, ax=ax)\n'
+        'ax.set_title("Impact of tick_shape (forgetting curve, tick_rate = 0.2)")\n'
         "plt.tight_layout()\n"
         "plt.show()"
     ),

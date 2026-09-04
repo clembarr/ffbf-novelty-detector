@@ -11,6 +11,17 @@ dependencies = ["numpy"]
 [project.optional-dependencies]
 viz = ["matplotlib"]
 
+[dependency-groups]
+dev = [
+    "pytest",
+    "matplotlib",
+    "nbformat",
+    "nbclient",
+    "ipykernel",
+    "sentence-transformers",
+    "torch==2.13.0; python_version >= '3.10'", #pinned to the cp314 wheel already in the uv cache, avoids a ~1 GB re-download
+]
+
 [tool.maturin]
 python-source = "python"
 module-name = "ffbf._core"
