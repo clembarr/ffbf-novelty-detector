@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" width="980" height="520" role="img" aria-label="How the FFBF turns one input into one novelty score">
+<rect width="980" height="520" rx="14" fill="#fcfcfb" stroke="#e1e0d9"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c3c2b7"/></marker></defs>
+<text x="40" y="46" font-family="Helvetica, Arial, sans-serif" font-size="17" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="40" dy="0">One input, three stages, one number</tspan></text>
+<text x="40" y="70" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#898781" font-weight="normal" text-anchor="start"><tspan x="40" dy="0">The filter never stores a vector: it stores how worn out its detectors are.</tspan></text>
+<text x="40" y="116" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="40" dy="0">① The input</tspan></text>
+<rect x="40" y="132" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.49"/>
+<rect x="40" y="147" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.36"/>
+<rect x="40" y="162" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.74"/>
+<rect x="40" y="177" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.30"/>
+<rect x="40" y="192" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.65"/>
+<rect x="40" y="207" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.52"/>
+<rect x="40" y="222" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.29"/>
+<rect x="40" y="237" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.63"/>
+<rect x="40" y="252" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.28"/>
+<rect x="40" y="267" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.58"/>
+<rect x="40" y="282" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.30"/>
+<rect x="40" y="297" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.32"/>
+<rect x="40" y="312" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.57"/>
+<rect x="40" y="327" width="46" height="11" rx="2" fill="#2a78d6" opacity="0.87"/>
+<text x="40" y="364" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#898781" font-weight="normal" text-anchor="start"><tspan x="40" dy="0">an embedding —</tspan><tspan x="40" dy="15">384 numbers, all meaningful</tspan></text>
+<line x1="98" y1="225" x2="180" y2="225" stroke="#c3c2b7" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="139" y="208" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#898781" font-weight="normal" text-anchor="middle"><tspan x="139" dy="0">a fixed</tspan><tspan x="139" dy="12">random wiring</tspan></text>
+<text x="196" y="116" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="196" dy="0">② 1 200 detectors</tspan></text>
+<circle cx="204" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="146" r="5.6" fill="#eb6834"/>
+<circle cx="408" cy="146" r="5.6" fill="#eb6834"/>
+<circle cx="425" cy="146" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="163" r="5.6" fill="#eb6834"/>
+<circle cx="238" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="163" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="180" r="5.6" fill="#eb6834"/>
+<circle cx="255" cy="180" r="5.6" fill="#eb6834"/>
+<circle cx="272" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="180" r="5.6" fill="#eb6834"/>
+<circle cx="323" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="180" r="5.6" fill="#eb6834"/>
+<circle cx="357" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="180" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="197" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="214" r="5.6" fill="#eb6834"/>
+<circle cx="221" cy="214" r="5.6" fill="#eb6834"/>
+<circle cx="238" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="214" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="231" r="5.6" fill="#eb6834"/>
+<circle cx="289" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="231" r="5.6" fill="#eb6834"/>
+<circle cx="357" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="231" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="248" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="265" r="5.6" fill="#eb6834"/>
+<circle cx="272" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="265" r="5.6" fill="#eb6834"/>
+<circle cx="374" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="265" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="425" cy="282" r="4.4" fill="#e1e0d9"/>
+<circle cx="204" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="221" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="238" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="255" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="272" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="289" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="306" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="323" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="340" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="357" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="374" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="391" cy="299" r="4.4" fill="#e1e0d9"/>
+<circle cx="408" cy="299" r="5.6" fill="#eb6834"/>
+<circle cx="425" cy="299" r="4.4" fill="#e1e0d9"/>
+<text x="196" y="364" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#898781" font-weight="normal" text-anchor="start"><tspan x="196" dy="0">each watches a random handful of the input;</tspan><tspan x="196" dy="15">only the loudest fire — that is its signature</tspan></text>
+<line x1="458" y1="225" x2="534" y2="225" stroke="#c3c2b7" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="496" y="208" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#898781" font-weight="normal" text-anchor="middle"><tspan x="496" dy="0">the ones</tspan><tspan x="496" dy="12">that fired</tspan></text>
+<text x="548" y="116" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="548" dy="0">③ The memory</tspan></text>
+<line x1="558" y1="140" x2="558" y2="312" stroke="#c3c2b7" stroke-width="1"/>
+<text x="550" y="145" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#898781" font-weight="normal" text-anchor="end"><tspan x="550" dy="0">1.0</tspan></text>
+<text x="550" y="315" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#898781" font-weight="normal" text-anchor="end"><tspan x="550" dy="0">0</tspan></text>
+<rect x="566.0" y="155.1" width="7" height="156.9" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="577.6" y="166.9" width="7" height="145.1" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="589.2" y="169.6" width="7" height="142.4" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="600.8" y="271.8" width="7" height="40.2" rx="1.5" fill="#eb6834" opacity="1.0"/>
+<rect x="612.4" y="155.3" width="7" height="156.7" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="624.0" y="275.2" width="7" height="36.8" rx="1.5" fill="#eb6834" opacity="1.0"/>
+<rect x="635.6" y="157.4" width="7" height="154.6" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="647.2" y="156.3" width="7" height="155.7" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="658.8" y="148.8" width="7" height="163.2" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="670.4" y="158.4" width="7" height="153.6" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="682.0" y="144.3" width="7" height="167.7" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="693.6" y="161.5" width="7" height="150.5" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="705.2" y="165.0" width="7" height="147.0" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="716.8" y="167.1" width="7" height="144.9" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="728.4" y="148.7" width="7" height="163.3" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="740.0" y="170.1" width="7" height="141.9" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="751.6" y="163.4" width="7" height="148.6" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="763.2" y="279.9" width="7" height="32.1" rx="1.5" fill="#eb6834" opacity="1.0"/>
+<rect x="774.8" y="285.6" width="7" height="26.4" rx="1.5" fill="#eb6834" opacity="1.0"/>
+<rect x="786.4" y="158.9" width="7" height="153.1" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="798.0" y="154.0" width="7" height="158.0" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="809.6" y="295.7" width="7" height="16.3" rx="1.5" fill="#eb6834" opacity="1.0"/>
+<rect x="821.2" y="156.9" width="7" height="155.1" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="832.8" y="167.6" width="7" height="144.4" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="844.4" y="162.1" width="7" height="149.9" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="856.0" y="144.0" width="7" height="168.0" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="867.6" y="282.6" width="7" height="29.4" rx="1.5" fill="#eb6834" opacity="1.0"/>
+<rect x="879.2" y="143.2" width="7" height="168.8" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="890.8" y="170.2" width="7" height="141.8" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<rect x="902.4" y="155.5" width="7" height="156.5" rx="1.5" fill="#2a78d6" opacity="0.55"/>
+<text x="548" y="364" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#898781" font-weight="normal" text-anchor="start"><tspan x="548" dy="0">one weight per detector, all starting at 1.0 —</tspan><tspan x="548" dy="15">the whole memory, a few kilobytes, and it never grows</tspan></text>
+<rect x="40" y="396" width="296" height="104" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+<rect x="40" y="396" width="4" height="104" rx="2" fill="#2a78d6"/>
+<text x="60" y="424" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="60" dy="0">What comes out</tspan></text>
+<text x="60" y="446" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start"><tspan x="60" dy="0">The average weight of the detectors that</tspan><tspan x="60" dy="15">fired, read before anything is written.</tspan></text>
+<rect x="356" y="396" width="296" height="104" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+<rect x="356" y="396" width="4" height="104" rx="2" fill="#eb6834"/>
+<text x="376" y="424" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="376" dy="0">Learning  ·  add()</tspan></text>
+<text x="376" y="446" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start"><tspan x="376" dy="0">Those weights drop. The input — and anything</tspan><tspan x="376" dy="15">that means something close — now reads as known.</tspan></text>
+<rect x="672" y="396" width="296" height="104" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+<rect x="672" y="396" width="4" height="104" rx="2" fill="#4a3aa7"/>
+<text x="692" y="424" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#0b0b0b" font-weight="600" text-anchor="start"><tspan x="692" dy="0">Forgetting  ·  tick()</tspan></text>
+<text x="692" y="446" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start"><tspan x="692" dy="0">Every weight drifts back toward 1.0. What stops</tspan><tspan x="692" dy="15">arriving slowly becomes new again.</tspan></text>
+<rect x="60" y="478" width="256" height="7" rx="3.5" fill="#e1e0d9"/>
+<circle cx="260" cy="481.5" r="6" fill="#2a78d6"/>
+<text x="60" y="496" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#898781" font-weight="normal" text-anchor="start"><tspan x="60" dy="0">familiar</tspan></text>
+<text x="316" y="496" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#898781" font-weight="normal" text-anchor="end"><tspan x="316" dy="0">never seen anything like it</tspan></text>
+</svg>
