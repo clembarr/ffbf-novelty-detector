@@ -155,7 +155,7 @@ cells: list[nbf.NotebookNode] = [
         cfg.epsilon = 0.002             #recovery of the losers on add() — near-silent, so memory persists
         cfg.decay_mode = DecayMode.EdgeAndFront
         cfg.tick_shape = TickShape.Log
-        cfg.tick_rate = 0.10            #forgetting speed applied by tick()
+        cfg.tick_rate = 0.06            #forgetting speed applied by tick() — calibrated so Act III swaps the two domains
         cfg.window_size = 20            #baseline length behind the adaptive is_novel() threshold
         cfg.seed = 42
 
@@ -655,7 +655,7 @@ cells: list[nbf.NotebookNode] = [
     code(
         """
         fig, ax = plt.subplots(figsize=(10, 4.5))
-        for d in (0.3, 0.6, 0.9):
+        for d in (0.1, 0.5, 0.9):
             c = tuned_cfg()
             c.delta = d
             s_t, s_c = run_scenario(c)
@@ -727,15 +727,22 @@ cells: list[nbf.NotebookNode] = [
     ),
     md(
         """
-        Read the right panel left to right: it is the speed of forgetting as a memory ages. All three
-        curves **decrease**, so with the current `tick_step` every shape forgets a fresh trace faster
-        than an old one — they differ in how sharply, not in direction. `Lin` is the fastest throughout
-        and is the only one that reaches 1.0 in reasonable time; `Exp` collapses to near-zero speed
-        past `w ≈ 0.7`, so a half-forgotten memory is kept almost indefinitely; `Log` is slower than
-        `Lin` on fresh traces and joins it as they age.
+        Read the right panel left to right: it is the speed of forgetting as a memory ages, and the
+        three shapes take three directions. `Lin` is **flat** — `tick_rate` per tick whatever the
+        synapse holds, so a trace goes from freshly learned to fully forgotten in `1 / tick_rate`
+        ticks, about 15 here. `Exp` **rises**: a fresh trace moves by 0.006 per tick against 0.055 for
+        an almost-forgotten one, so a memory is held nearly intact for a long while and then wiped in
+        a handful of ticks. `Log` **falls**, the mirror image: 0.054 on a fresh trace against 0.006 at
+        the top, so half the depression is undone in a dozen ticks and the rest trails off, never
+        quite reaching 1.0. The cliff at the right edge of `Lin` and `Exp` is only the clamp: the
+        last step is truncated so the weight lands on 1.0 instead of overshooting it.
 
-        In practice this is the knob for choosing **what the filter should keep longest**, and the
-        stream below shows the consequence: the shapes only separate once memories have had time to age.
+        This is the knob for choosing **what the filter should keep longest**: `Exp` protects the
+        recent and drops the stale, `Log` keeps a faint trace of everything for a long time, `Lin`
+        treats both alike. The demo runs on `Log` because it is the one that makes the drift readable
+        at this stream length — replayed on Act III at the same `tick_rate`, `Exp` only lifts the tech
+        corpus to 0.30 by the last sentence where `Log` reaches 0.73, so the domain swap would barely
+        show. The stream below is that comparison, one curve per shape.
         """
     ),
     code(
@@ -801,6 +808,51 @@ cells: list[nbf.NotebookNode] = [
           domain that stops arriving becomes detectable again — a Bloom filter can only saturate.
         - **The threshold is adaptive.** `is_novel()` compares against a moving baseline, so no
           hand-tuned constant has to track the stream.
+        """
+    ),
+    md(
+        """
+        ### Releasing the memory
+
+        The filter costs 4.7 KiB and the arrays built around it barely more — what weighs in this
+        kernel is the sentence encoder, some 90 MiB of transformer weights kept alive by a single
+        name. None of it is needed once the figures are drawn, so the last cell drops every name the
+        notebook created and collects what they held. Torch hands the tensors back to its own
+        allocator rather than to the OS, so the process size hardly moves: what is released is
+        reusable by the next model loaded in this kernel, not returned to the system.
+        """
+    ),
+    code(
+        """
+        import gc
+
+        #read the sizes before the names go, otherwise there is nothing left to measure
+        arrays: list[np.ndarray] = [
+            all_emb, coords, weight_history_arr,
+            weights_fresh, weights_after_I, weights_after_III,
+            map_after_I, map_mid, map_after_III,
+        ]
+        freed_mib: float = sum(a.nbytes for a in arrays) / 1024 ** 2
+        del arrays
+
+        #matplotlib keeps every figure in its registry until it is closed, inline display or not
+        plt.close("all")
+
+        #pop rather than del: the notebook stays re-runnable from any cell, and a name that was
+        #never created (a section skipped) is not an error here
+        dropped: int = 0
+        for name in (
+            "model", "all_emb", "tech_emb", "cuisine_emb", "tech_stream", "tech_holdout",
+            "vec_spike", "coords", "weight_history", "weight_history_arr", "weights_fresh",
+            "weights_after_I", "weights_after_III", "map_after_I", "map_mid", "map_after_III",
+            "snapshots", "f", "f_notick", "flocal", "trace", "levels", "scores_I", "scores_III",
+            "scores_III_notick", "scores_all", "tech_curve", "tech_curve_notick", "cuisine_curve",
+        ):
+            dropped += globals().pop(name, None) is not None
+
+        collected: int = gc.collect()
+        print(f"Dropped {dropped} names, {freed_mib:.2f} MiB of arrays and the encoder "
+              f"— {collected} objects reclaimed")
         """
     ),
 ]
