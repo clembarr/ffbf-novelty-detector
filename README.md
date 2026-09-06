@@ -31,11 +31,23 @@ The whole state is `m` floats plus the projection matrix, sized at creation and 
 
 ![memory](https://img.shields.io/badge/memory-O(m),%20fixed-eb6834?style=flat) ![state](https://img.shields.io/badge/state-4.7%20KiB%20%40%20m%3D1200-eb6834?style=flat)
 
-## What it does on a stream
+## See it run
 
-Every stream has a shape - the traffic a service normally serves, the vocabulary a queue normally receives, the readings a sensor normally reports. Noticing what does not fit that shape is easy for one afternoon and hard forever, because the shape itself moves. The figures below measure both halves of that on a stream of service logs: twenty routine lines, then the stream turns into a security incident. None of this is declared to the filter - it sees 384 numbers per line, and nothing else.
+**[Open the bench](https://clembarr.github.io/ffbf-novelty-detector/assets/ffbf-bench.html)** - [`assets/ffbf-bench.html`](assets/ffbf-bench.html), a single self-contained page: the filter ported to JavaScript, sized down to `m = 300` so one synapse is still a visible bar. Send a stimulus and the `k` winners fire, the fibres they read light up, the relief takes the dent, and the score lands against the moving baseline `is_novel()` compares to. `delta`, `epsilon`, `k`, the tick shape and the threshold are all live, and three scripted runs walk through the three things worth seeing: a repeat collapsing into its own dent, a stranger spiking, and a memory decaying back to new.
 
-### Familiarity spreads by meaning, not by item
+**[`notebooks/ffbf_semantic_demo.ipynb`](notebooks/ffbf_semantic_demo.ipynb)** runs a different stream - one that drifts from one subject to an unrelated one - end to end: an intruder scored live against the moving baseline `is_novel()` uses, the memory watched synapse by synapse, and sweeps over the knobs that matter (how hard one input is written, which memories fade first, how far back the threshold looks). `python notebooks/_build.py` regenerates it; the figures on this page come from `python assets/_figures.py`.
+
+<!-- The bench is a standalone document because Pages serves it as one. To publish it as a
+     Claude Artifact, strip the <!doctype>/<head>/<body> skeleton the host supplies itself:
+     `python assets/_artifact.py` writes the fragment to build/. -->
+
+<!-- Capture: open the bench, press `reel ▶` (45 s, captioned, sized to the window), record, then:
+     ffmpeg -i capture.mp4 -vf "fps=18,scale=1100:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse" -loop 0 assets/bench.gif
+     and uncomment the line below.
+![One stimulus fires fifteen detectors, carves the weight relief, and the score collapses on the repeat](assets/bench.gif)
+-->
+
+## Familiarity spreads by meaning, not by item
 
 | Probe, after twenty routine lines | Novelty |
 |---|---|
@@ -49,13 +61,13 @@ The middle row is the one a hash-based filter cannot produce: for it, an unseen 
 
 Same fifty lines, placed by meaning, at four moments of the run - position never changes, only the shade does. In panel ② the whole routine cluster goes pale, the five lines never fed to the filter included. In panel ④ it darkens again once the incident has taken over: what a filter covers is a region, not a list, and that region moves with the stream.
 
-### Forgetting is what keeps it usable
+## Forgetting is what keeps it usable
 
 ![Routine novelty rises from 0.12 to 0.68 while the incident lines fall to 0.44](assets/drift.png)
 
 As the incident takes over, the two groups trade places and cross around the eleventh line. Run the same stream with forgetting switched off and routine traffic moves 0.07 → 0.08 - **36× slower**. That is the failure mode of a filter whose bits only ever get set: given enough stream, it calls everything familiar. Bounded memory is only worth having if something empties it.
 
-### The memory is the whole state
+## The memory is the whole state
 
 ![The 1 200 weights after the incident, and three of them followed across the run](assets/memory.png)
 
@@ -98,10 +110,6 @@ f.tick()                 # passive forgetting, with decay_mode = EdgeAndFront
 ```
 
 Build the bindings with `uv sync && maturin develop`.
-
-## Demo notebook
-
-**[`notebooks/ffbf_semantic_demo.ipynb`](notebooks/ffbf_semantic_demo.ipynb)** runs a different stream - one that drifts from one subject to an unrelated one - end to end: an intruder scored live against the moving baseline `is_novel()` uses, the memory watched synapse by synapse, and sweeps over the knobs that matter (how hard one input is written, which memories fade first, how far back the threshold looks). `python notebooks/_build.py` regenerates it; the figures on this page come from `python assets/_figures.py`.
 
 ## Configuration
 
@@ -148,3 +156,5 @@ The projection matrix is saved explicitly, never re-generated from the seed, so 
 
 </details>
 
+---
+Illustrative assets, such as the bench and the notebook, have been built with Claude.
