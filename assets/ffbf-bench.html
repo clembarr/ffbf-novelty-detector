@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mushroom Body Bench</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:light dark;
+  --surface:#fcfcfb; --panel:#f5f4ef; --sunk:#eeede6;
+  --ink:#0b0b0b; --soft:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hair:#dedcd3;
+  --blue:#2a78d6; --orange:#eb6834; --violet:#4a3aa7;
+  --shadow:0 1px 2px rgba(11,11,11,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --surface:#16150f; --panel:#1d1c15; --sunk:#12110c;
+    --ink:#f4f3ec; --soft:#b6b3a7; --muted:#87857b;
+    --grid:#2b2a22; --axis:#3d3b31; --hair:#2b2a22;
+    --blue:#4a8ee4; --orange:#d9603a; --violet:#7a67d8;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --surface:#16150f; --panel:#1d1c15; --sunk:#12110c;
+  --ink:#f4f3ec; --soft:#b6b3a7; --muted:#87857b;
+  --grid:#2b2a22; --axis:#3d3b31; --hair:#2b2a22;
+  --blue:#4a8ee4; --orange:#d9603a; --violet:#7a67d8;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+/* #reel is display:flex, an author rule that would beat the UA [hidden] rule */
+[hidden]{display:none!important}
+body{
+  margin:0;
+  background:var(--surface); color:var(--ink);
+  font:400 15px/1.55 "IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px; margin:0 auto; padding:34px 26px 72px; display:flex; flex-direction:column; gap:30px}
+
+h1,h2,.eyebrow{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",Arial,sans-serif}
+h1{font-size:41px; line-height:1.04; font-weight:700; margin:6px 0 0; letter-spacing:-.015em; text-wrap:balance}
+h2{font-size:16px; font-weight:600; margin:0; letter-spacing:.01em}
+.eyebrow{font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0}
+.lede{max-width:66ch; color:var(--soft); margin:12px 0 0; font-size:16.5px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-variant-numeric:tabular-nums}
+
+/* ---- section headers: a hairline rule with a label riding on it ---- */
+.band{display:flex; flex-direction:column; gap:14px}
+.band > header{display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--hair); padding-bottom:8px}
+.band > header p{margin:0; font-size:12.5px; color:var(--muted)}
+
+/* ---- the bench ---- */
+.bench{position:relative}
+.bench canvas{display:block; width:100%; height:auto; touch-action:none; cursor:crosshair}
+.tip{
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--panel); border:1px solid var(--axis); border-radius:3px;
+  padding:5px 8px; font-family:"IBM Plex Mono",monospace; font-size:11.5px;
+  color:var(--ink); box-shadow:var(--shadow); white-space:pre; z-index:5;
+}
+
+/* ---- transport ---- */
+.transport{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.sep{width:1px; align-self:stretch; background:var(--hair); margin:2px 6px}
+button{
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink);
+  background:var(--panel); border:1px solid var(--axis); border-radius:3px;
+  padding:7px 12px; cursor:pointer; transition:background .12s,border-color .12s;
+}
+button:hover{background:var(--sunk); border-color:var(--muted)}
+button.primary{background:var(--orange); border-color:var(--orange); color:#fff}
+button.primary:hover{filter:brightness(1.07)}
+button[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--surface)}
+:focus-visible{outline:2px solid var(--violet); outline-offset:2px}
+
+/* ---- readout ---- */
+.readout{display:grid; grid-template-columns:minmax(230px,1fr) 2fr; gap:26px; align-items:start}
+.hero{display:flex; flex-direction:column; gap:2px}
+.hero .val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+  font-size:66px; line-height:1; font-weight:500; letter-spacing:-.03em; color:var(--orange)}
+.hero .cap{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.pill{
+  align-self:flex-start; margin-top:10px; font-family:"IBM Plex Mono",monospace; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; border-radius:2px;
+  border:1px solid currentColor;
+}
+.pill.novel{color:var(--orange)}
+.pill.familiar{color:var(--muted)}
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:2px 26px; align-content:start}
+.stat{display:flex; flex-direction:column; gap:1px; padding:7px 0; border-top:1px solid var(--hair)}
+.stat .k{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.stat .v{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:17px}
+
+/* ---- controls ---- */
+.rail{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:30px 44px}
+.rail > .runs{grid-column:1/-1}
+.runs-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px 34px}
+.run{display:flex; flex-direction:column; align-items:flex-start; gap:9px}
+.run p{margin:0; font-size:12.5px; color:var(--muted); max-width:40ch}
+.run strong{color:var(--soft); font-weight:500}
+.group{display:flex; flex-direction:column; gap:11px}
+.group > .eyebrow{border-bottom:1px solid var(--hair); padding-bottom:7px}
+.knob{display:grid; grid-template-columns:1fr auto; gap:2px 10px; align-items:center}
+.knob label{font-size:13px; color:var(--soft)}
+.knob .num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink)}
+.knob .hint{grid-column:1/-1; font-size:11.5px; color:var(--muted); margin-top:-2px}
+input[type=range]{grid-column:1/-1; width:100%; accent-color:var(--blue); height:20px; margin:0}
+select{
+  grid-column:1/-1; font-family:"IBM Plex Mono",monospace; font-size:12.5px; padding:6px 8px;
+  background:var(--panel); color:var(--ink); border:1px solid var(--axis); border-radius:3px;
+}
+
+/* ---- log ---- */
+table{border-collapse:collapse; width:100%; font-family:"IBM Plex Mono",monospace;
+  font-size:12.5px; font-variant-numeric:tabular-nums}
+th{text-align:left; font-weight:500; color:var(--muted); font-size:11px; letter-spacing:.08em;
+  text-transform:uppercase; padding:0 14px 7px 0; border-bottom:1px solid var(--hair)}
+td{padding:5px 14px 5px 0; border-bottom:1px solid var(--hair); color:var(--soft)}
+td.num{color:var(--ink)}
+td.v-novel{color:var(--orange)}
+.scroller{overflow-x:auto}
+
+/* ---- notes ---- */
+.notes{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px 40px}
+.notes h3{font-family:"IBM Plex Sans Condensed",sans-serif; font-size:14px; margin:0 0 6px; font-weight:600}
+.notes p{margin:0; font-size:13.5px; color:var(--soft)}
+.notes code{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink)}
+footer{border-top:1px solid var(--hair); padding-top:16px; font-size:12.5px; color:var(--muted)}
+@media (max-width:720px){
+  h1{font-size:32px}
+  .readout{grid-template-columns:1fr}
+  .rail{grid-template-columns:1fr}
+  .hero .val{font-size:52px}
+}
+/* ---- reel: the capture layout, one scripted run at presentation scale ---- */
+#reel{
+  position:fixed; inset:0; z-index:60; background:var(--surface); cursor:none;
+  display:flex; flex-direction:column; gap:24px; padding:min(6vh,52px) min(5vw,64px);
+}
+#reel .reel-head{flex:0 0 auto}
+#reel h2{font-size:clamp(19px,2.3vw,33px); font-weight:600; line-height:1.22;
+  margin:10px 0 0; max-width:40ch; text-wrap:balance}
+#reel .eyebrow{font-size:12.5px; letter-spacing:.2em}
+#reel-stage{flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; gap:22px; min-height:0}
+#reel-stage canvas{pointer-events:none}
+.reel-foot{flex:0 0 auto; display:flex; align-items:flex-end; gap:24px}
+.reel-foot .v{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+  font-size:clamp(38px,5.4vw,78px); line-height:.88; font-weight:500;
+  color:var(--orange); letter-spacing:-.03em}
+.reel-foot .pill{margin:0 0 12px}
+.reel-bar{flex:1; height:2px; background:var(--hair); position:relative; margin-bottom:15px}
+.reel-bar i{position:absolute; left:0; top:0; bottom:0; width:0; background:var(--violet)}
+#reel-card{display:none; margin:auto 0}
+.reel-title{font-family:"IBM Plex Sans Condensed",sans-serif; font-weight:700; margin:0;
+  font-size:clamp(38px,6.4vw,92px); line-height:1.02; letter-spacing:-.02em; max-width:20ch}
+.reel-sub{white-space:pre-line; color:var(--soft); font-size:clamp(16px,1.7vw,25px); margin:18px 0 0; max-width:46ch}
+#reel[data-card] #reel-card{display:block}
+#reel[data-card] .reel-head,
+#reel[data-card] #reel-stage,
+#reel[data-card] .reel-foot{display:none}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">FFBF · fruit fly bloom filter</p>
+    <h1>Mushroom Body Bench</h1>
+    <p class="lede">A fly does not remember what it smelled. It keeps a relief of synaptic weights that every
+    odour carves, and that time fills back in. Send a stimulus and watch the same three things the Rust
+    filter does: fire <span class="mono">k</span> detectors, read the memory under them, then dent it.</p>
+  </header>
+
+  <section class="band">
+    <header>
+      <h2>The circuit</h2>
+      <p>64 input lines · 300 KC→MBON synapses · hover the relief to read one synapse</p>
+    </header>
+    <div class="bench">
+      <canvas id="bench" aria-label="Input vector, the fibres of the winning detectors, and the weight relief of 300 synapses"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="transport">
+      <button data-src="A">send A</button>
+      <button data-src="B">send B</button>
+      <button data-src="C">send C</button>
+      <button data-src="D">send D</button>
+      <button data-src="noise">send noise</button>
+      <span class="sep"></span>
+      <button id="stream" aria-pressed="false">stream ▶</button>
+      <button id="tick">tick ×50</button>
+      <button id="reset">reset memory</button>
+      <button id="reelbtn">reel ▶</button>
+    </div>
+    <p style="margin:0;font-size:12.5px;color:var(--muted)">
+      <span class="mono">reel ▶</span> plays a 45-second captioned run at presentation scale, for screen
+      capture. Esc leaves it.</p>
+  </section>
+
+  <section class="readout">
+    <div class="hero">
+      <span class="cap">novelty score</span>
+      <span class="val mono" id="score">—</span>
+      <span class="pill mono familiar" id="verdict">waiting</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="k">baseline</span><span class="v" id="baseline">—</span></div>
+      <div class="stat"><span class="k">stimulus</span><span class="v" id="lastsrc">—</span></div>
+      <div class="stat"><span class="k">add() calls</span><span class="v" id="adds">0</span></div>
+      <div class="stat"><span class="k">tick() calls</span><span class="v" id="ticks">0</span></div>
+      <div class="stat"><span class="k">carved</span><span class="v" id="carved">0</span></div>
+      <div class="stat"><span class="k">state</span><span class="v" id="bytes">1.2 kB</span></div>
+    </div>
+  </section>
+
+  <section class="band">
+    <header>
+      <h2>Score against its own past</h2>
+      <p>last 120 add() calls · the shaded field is where a score counts as novel</p>
+    </header>
+    <div class="bench">
+      <canvas id="trace" aria-label="Novelty score over the last 120 inputs, against the adaptive window baseline"></canvas>
+      <div class="tip" id="tip2"></div>
+    </div>
+  </section>
+
+  <section class="rail">
+    <div class="group runs">
+      <p class="eyebrow">Scripted runs</p>
+      <div class="runs-grid">
+        <div class="run">
+          <button class="primary" data-run="repeat">D five times over</button>
+          <p>D is a source the warm-up never used. The first copy scores high and carves; the
+          rest fall into the dent it left.</p>
+        </div>
+        <div class="run">
+          <button data-run="stranger">a stranger arrives</button>
+          <p>Three familiar inputs, then E — which the filter has never met. Run it twice and E
+          is no longer a stranger.</p>
+        </div>
+        <div class="run">
+          <button data-run="forget">let it forget</button>
+          <p>400 ticks of passive decay fill the relief back in, then A arrives again. It reads
+          as new.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="eyebrow">Learning</p>
+      <div class="knob">
+        <label for="delta">δ · depression on the winners</label><span class="num" id="delta-v">0.50</span>
+        <input type="range" id="delta" min="0.05" max="0.95" step="0.05" value="0.5">
+        <span class="hint">How deep one exposure carves. w ← w·(1−δ)</span>
+      </div>
+      <div class="knob">
+        <label for="eps">ε · recovery on everyone else</label><span class="num" id="eps-v">0.030</span>
+        <input type="range" id="eps" min="0" max="0.12" step="0.005" value="0.03">
+        <span class="hint">Saturation forgetting: a memory fades as other things arrive.</span>
+      </div>
+      <div class="knob">
+        <label for="k">k · detectors that fire</label><span class="num" id="k-v">15</span>
+        <input type="range" id="k" min="3" max="45" step="1" value="15">
+        <span class="hint">The top-k winners out of m = 300. Wider k generalises harder.</span>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="eyebrow">Forgetting &amp; verdict</p>
+      <div class="knob">
+        <label for="shape">tick shape</label><span class="num"></span>
+        <select id="shape">
+          <option value="Lin">Lin — everyone at one speed</option>
+          <option value="Exp">Exp — hold, then wipe</option>
+          <option value="Log">Log — fast fade, long tail</option>
+        </select>
+        <span class="hint">Which memories tick() gives back first.</span>
+      </div>
+      <div class="knob">
+        <label for="rate">tick_rate</label><span class="num" id="rate-v">0.010</span>
+        <input type="range" id="rate" min="0.001" max="0.05" step="0.001" value="0.01">
+        <span class="hint">EdgeAndFront only. Set it to zero for EdgeOnly behaviour.</span>
+      </div>
+      <div class="knob">
+        <label for="thr">threshold · novel above baseline ×</label><span class="num" id="thr-v">1.00</span>
+        <input type="range" id="thr" min="0.85" max="1.15" step="0.01" value="1">
+        <span class="hint">is_novel(x, t) ⇔ novelty(x) ≥ mean(window) · t</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <header>
+      <h2>Event log</h2>
+      <p>the last twelve add() calls, verdict taken before the update</p>
+    </header>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>#</th><th>stimulus</th><th>novelty</th><th>baseline</th><th>verdict</th><th>carved KCs</th></tr></thead>
+        <tbody id="log"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="notes">
+    <div>
+      <h3>The wiring never changes</h3>
+      <p>Each of the 300 KCs reads a fixed random slice of the input — <code>round(0.12 · 64) = 8</code> lines,
+      drawn once from a seeded shuffle. That is the hash. Similar inputs light similar detectors, which is
+      the whole reason a near-duplicate scores low.</p>
+    </div>
+    <div>
+      <h3>Only the weights move</h3>
+      <p>On <code>add()</code>: the k winners get <code>w ← max(w·(1−δ), 1e-3)</code>, everyone else
+      <code>w ← min(w+ε, 1)</code>. The score is the mean weight under the winners, read <em>before</em>
+      the write.</p>
+    </div>
+    <div>
+      <h3>Novelty is relative</h3>
+      <p>The verdict compares the score to the mean of a rolling window of recent scores, not to a fixed
+      number. A stream that drifts drags its own baseline along.</p>
+    </div>
+  </section>
+
+  <footer>
+    A faithful JavaScript port of <span class="mono">ffbf::FFBF</span> — same seeded sparse projection,
+    same top-k, same update rule, same tick shapes. Sized down to m = 300 so one synapse is still a
+    visible bar. <span class="mono">δ 0.5 · ε 0.03 · k 15 · window 24</span>.
+  </footer>
+</div>
+
+<div id="reel" hidden>
+  <div id="reel-card">
+    <p class="reel-title" id="reel-title"></p>
+    <p class="reel-sub" id="reel-sub"></p>
+  </div>
+  <div class="reel-head">
+    <p class="eyebrow">FFBF · fruit fly bloom filter</p>
+    <h2 id="reel-cap"></h2>
+  </div>
+  <div id="reel-stage"></div>
+  <div class="reel-foot">
+    <div>
+      <p class="eyebrow" style="margin:0 0 6px">novelty</p>
+      <div class="v" id="reel-val">—</div>
+    </div>
+    <span class="pill mono familiar" id="reel-pill">—</span>
+    <div class="reel-bar"><i id="reel-prog"></i></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================ the filter
+   Port of ffbf/src/{projection,filter,analysis,decay}.rs. Names kept from the
+   Rust so the page reads as documentation of the library it demonstrates. */
+
+const MIN_WEIGHT = 1e-3;
+
+/** Deterministic PRNG, standing in for the ChaCha8 the Rust seeds its shuffle with. */
+function mulberry32(a){
+  return function(){
+    a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+class Projection {
+  constructor(cfg){
+    const rnd = mulberry32(cfg.seed);
+    const pns = Math.max(1, Math.round(cfg.projection_sparsity * cfg.input_dim));
+    const idx = Array.from({length: cfg.input_dim}, (_, i) => i);
+    this.connections = [];
+    for (let kc = 0; kc < cfg.m; kc++){
+      // Fisher-Yates on the shared index list, exactly like the Rust shuffle-then-slice
+      for (let i = idx.length - 1; i > 0; i--){
+        const j = (rnd() * (i + 1)) | 0;
+        [idx[i], idx[j]] = [idx[j], idx[i]];
+      }
+      this.connections.push(idx.slice(0, pns).sort((a, b) => a - b));
+    }
+  }
+  /** Sum each KC's slice of the input, keep the k highest, return their indices sorted. */
+  project(input, k){
+    const act = new Float32Array(this.connections.length);
+    for (let kc = 0; kc < this.connections.length; kc++){
+      const c = this.connections[kc];
+      let s = 0;
+      for (let i = 0; i < c.length; i++) s += input[c[i]];
+      act[kc] = s;
+    }
+    const order = Array.from(act.keys()).sort((a, b) => act[b] - act[a]);
+    return order.slice(0, k).sort((a, b) => a - b);
+  }
+}
+
+class NoveltyWindow {
+  constructor(capacity){ this.buf = new Float32Array(capacity); this.head = 0; this.len = 0; }
+  push(score){
+    this.buf[this.head] = score;
+    this.head = (this.head + 1) % this.buf.length;
+    if (this.len < this.buf.length) this.len++;
+  }
+  mean(){
+    if (this.len === 0) return null;
+    let s = 0;
+    for (let i = 0; i < this.len; i++) s += this.buf[i];
+    return s / this.len;
+  }
+}
+
+class FFBF {
+  constructor(cfg){
+    this.cfg = cfg;
+    this.projection = new Projection(cfg);
+    this.weights = new Float32Array(cfg.m).fill(1);
+    this.window = new NoveltyWindow(cfg.window_size);
+  }
+  novelty(input){
+    const active = this.projection.project(input, this.cfg.k);
+    return {active, score: this.score(active)};
+  }
+  score(active){
+    let s = 0;
+    for (const i of active) s += this.weights[i];
+    return s / active.length;
+  }
+  /** Score, record, then depress the winners and let everything else creep back. */
+  add(input){
+    const {active, score} = this.novelty(input);
+    this.window.push(score);
+    const scale = 1 - this.cfg.delta;
+    const mark = new Uint8Array(this.cfg.m);
+    for (const i of active) mark[i] = 1;
+    for (let i = 0; i < this.cfg.m; i++){
+      this.weights[i] = mark[i]
+        ? Math.max(this.weights[i] * scale, MIN_WEIGHT)
+        : Math.min(this.weights[i] + this.cfg.epsilon, this.cfg.w_max);
+    }
+    return {active, score};
+  }
+  /** Passive decay: every weight slides back toward 1.0, at a speed the shape picks. */
+  tick(n = 1){
+    const r = this.cfg.tick_rate;
+    if (r <= 0) return;
+    for (let t = 0; t < n; t++){
+      for (let i = 0; i < this.cfg.m; i++){
+        const w = this.weights[i];
+        const step = this.cfg.tick_shape === "Lin" ? r
+                   : this.cfg.tick_shape === "Exp" ? r * w
+                   : r * (1 - w);
+        this.weights[i] = Math.min(w + step, 1, this.cfg.w_max);
+      }
+    }
+  }
+}
+
+/* ============================================================ stimuli
+   Four sources, each a prototype pattern plus jitter, so repeats are near
+   duplicates rather than identical vectors — that is what generalisation means
+   here. "noise" is a fresh random vector every time. */
+
+const DIM = 64;
+const srcRnd = mulberry32(20260906);
+const SOURCES = {};
+for (const name of ["A", "B", "C", "D", "E"]){
+  const proto = new Float32Array(DIM);
+  const lit = new Set();
+  while (lit.size < 18) lit.add((srcRnd() * DIM) | 0);
+  for (let i = 0; i < DIM; i++) proto[i] = lit.has(i) ? 0.55 + srcRnd() * 0.45 : srcRnd() * 0.14;
+  SOURCES[name] = proto;
+}
+function stimulus(name){
+  const v = new Float32Array(DIM);
+  if (name === "noise"){ for (let i = 0; i < DIM; i++) v[i] = Math.random(); return v; }
+  const proto = SOURCES[name];
+  for (let i = 0; i < DIM; i++) v[i] = Math.min(1, Math.max(0, proto[i] + (Math.random() - 0.5) * 0.24));
+  return v;
+}
+
+/* ============================================================ state */
+
+const cfg = {
+  input_dim: DIM, m: 300, k: 15, projection_sparsity: 0.12,
+  delta: 0.5, epsilon: 0.03, w_max: 1.0,
+  tick_shape: "Lin", tick_rate: 0.01, window_size: 24, seed: 7,
+};
+let filter = new FFBF(cfg);
+let threshold = 1.0;
+let events = [];      // {n, src, score, base, novel, active}
+let addCount = 0, tickCount = 0, evtCount = 0;
+let lastInput = null;
+const reduced = matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+// the drawing lags the model: prev/next are snapshots the animation interpolates
+let anim = null;
+const drawW = new Float32Array(cfg.m);
+drawW.fill(1);
+let dirty = true;
+
+/* ============================================================ bench canvas */
+
+const bench = document.getElementById("bench");
+const bctx = bench.getContext("2d");
+const tip = document.getElementById("tip");
+const PAD = 4;
+const IN_Y = 16;
+let BH = 300, IN_H = 26;                 // bench height and input strip
+let BASE = 270, SCALE = 140;             // relief baseline and w=1.0 height
+let BW = 1000;                           // css width, set on resize
+let FS = 11;                             // canvas type size
+let reelOn = false;
+
+/** Two sizes for the same drawings: compact in the page, larger while the reel is recorded. */
+function geom(){
+  if (!reelOn){
+    BH = 300; IN_H = 26; SCALE = 140; BASE = 270; TH = 168; FS = 11;
+    return;
+  }
+  //the reel fills whatever window is being recorded, without pushing the readout off screen
+  BH = Math.max(230, Math.min(430, Math.round(innerHeight * 0.40)));
+  IN_H = 34;
+  SCALE = Math.round(BH * 0.49);
+  BASE = BH - 34;
+  TH = Math.max(140, Math.min(226, Math.round(innerHeight * 0.21)));
+  FS = 15;
+}
+
+function css(name){ return getComputedStyle(document.body).getPropertyValue(name).trim(); }
+
+/** Clear the whole bitmap in device space. Clearing in drawing units instead would miss part of
+    the canvas whenever the box has changed size since the last fit(), and every frame would then
+    paint over the last one. */
+function wipe(ctx){
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.restore();
+}
+
+function fit(canvas, h){
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  const w = Math.max(320, Math.round(canvas.parentElement.getBoundingClientRect().width));
+  const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+  //both CSS dimensions are pinned, so the box can never drift away from the bitmap it holds
+  if (canvas.width !== bw || canvas.height !== bh){ canvas.width = bw; canvas.height = bh; }
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  const c = canvas.getContext("2d");
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return w;
+}
+function easeOut(p){ return 1 - Math.pow(1 - p, 3); }
+function cellX(i){ return PAD + i * ((BW - 2 * PAD) / DIM); }
+function barX(kc){ return PAD + kc * ((BW - 2 * PAD) / cfg.m); }
+
+function drawBench(){
+  const ink = css("--ink"), muted = css("--muted"), axis = css("--axis"),
+        grid = css("--grid"), blue = css("--blue"), orange = css("--orange");
+  wipe(bctx);
+
+  const p = anim ? Math.min(1, (performance.now() - anim.t0) / anim.dur) : 1;
+  const e = easeOut(p);
+  const src = anim ? anim.prev : filter.weights;
+  const dst = anim ? anim.next : filter.weights;
+  for (let i = 0; i < cfg.m; i++) drawW[i] = src[i] + (dst[i] - src[i]) * e;
+
+  // fibres flare in over the first half of the step, then fade with the dent settling
+  const flare = anim ? (p < 0.45 ? p / 0.45 : Math.max(0, 1 - (p - 0.45) / 0.55)) : 0;
+  const input = anim ? anim.input : lastInput;
+  const activeSet = anim ? anim.activeSet : null;
+  const litPns = anim ? anim.litPns : null;
+
+  bctx.font = FS + 'px "IBM Plex Mono", monospace';
+  bctx.textBaseline = "alphabetic";
+  bctx.fillStyle = muted;
+  bctx.fillText("input · 64 PNs", PAD, IN_Y - 5);
+
+  // input strip: opacity carries the component value, an outline marks the lines that won
+  const cw = (BW - 2 * PAD) / DIM;
+  for (let i = 0; i < DIM; i++){
+    const v = input ? input[i] : 0;
+    bctx.globalAlpha = 0.10 + 0.90 * v;
+    bctx.fillStyle = blue;
+    bctx.fillRect(cellX(i), IN_Y, Math.max(1, cw - 1.6), IN_H);
+    bctx.globalAlpha = 1;
+    if (litPns && litPns.has(i) && flare > 0.02){
+      bctx.globalAlpha = flare;
+      bctx.strokeStyle = orange;
+      bctx.lineWidth = 1.4;
+      bctx.strokeRect(cellX(i) - 0.5, IN_Y - 0.5, Math.max(1, cw - 1.6) + 1, IN_H + 1);
+      bctx.globalAlpha = 1;
+    }
+  }
+
+  // the bundle: one curve per synapse of every winning detector
+  if (anim && flare > 0.02){
+    bctx.strokeStyle = orange;
+    bctx.lineWidth = 1;
+    bctx.globalAlpha = 0.30 * flare;
+    bctx.beginPath();
+    for (const kc of anim.active){
+      const x1 = barX(kc) + (BW - 2 * PAD) / cfg.m / 2;
+      const y1 = BASE - drawW[kc] * SCALE - 4;
+      for (const pn of filter.projection.connections[kc]){
+        const x0 = cellX(pn) + cw / 2;
+        bctx.moveTo(x0, IN_Y + IN_H);
+        bctx.quadraticCurveTo(x0, (IN_Y + IN_H + y1) / 2, x1, y1);
+      }
+    }
+    bctx.stroke();
+    bctx.globalAlpha = 1;
+  }
+
+  // w = 1.0 rule
+  bctx.strokeStyle = axis;
+  bctx.setLineDash([3, 4]);
+  bctx.lineWidth = 1;
+  bctx.beginPath();
+  bctx.moveTo(PAD, BASE - SCALE + 0.5);
+  bctx.lineTo(BW - PAD, BASE - SCALE + 0.5);
+  bctx.stroke();
+  bctx.setLineDash([]);
+  bctx.fillStyle = muted;
+  bctx.fillText("w = 1.0 · never seen", PAD, BASE - SCALE - 7);
+  bctx.fillText("weights · 300 KC→MBON synapses", PAD, BASE + 16);
+
+  // the relief itself: height is the weight, ink weight is how deep the dent is
+  const bw = (BW - 2 * PAD) / cfg.m;
+  for (let kc = 0; kc < cfg.m; kc++){
+    const w = drawW[kc];
+    const h = Math.max(0.6, w * SCALE);
+    const hot = activeSet && activeSet.has(kc) ? flare : 0;
+    bctx.globalAlpha = 0.26 + 0.74 * (1 - w);
+    bctx.fillStyle = blue;
+    bctx.fillRect(barX(kc), BASE - h, Math.max(0.8, bw - 1), h);
+    if (hot > 0.02){
+      bctx.globalAlpha = hot;
+      bctx.fillStyle = orange;
+      bctx.fillRect(barX(kc), BASE - h, Math.max(0.8, bw - 1), h);
+    }
+    bctx.globalAlpha = 1;
+  }
+  bctx.strokeStyle = grid;
+  bctx.beginPath();
+  bctx.moveTo(PAD, BASE + 0.5);
+  bctx.lineTo(BW - PAD, BASE + 0.5);
+  bctx.stroke();
+
+  if (anim && p >= 1) anim = null;
+  return anim !== null;
+}
+
+/* ============================================================ trace canvas */
+
+const trace = document.getElementById("trace");
+const tctx = trace.getContext("2d");
+const tip2 = document.getElementById("tip2");
+let TH = 168;
+const TL = 42, TR = 96, TT = 14, TB = 22;
+let TW = 1000, KEEP = 120;
+
+function traceGeom(){
+  const w = TW - TL - TR, h = TH - TT - TB;
+  const shown = events.slice(-KEEP);
+  const x = i => TL + (shown.length < 2 ? w / 2 : w * i / (shown.length - 1));
+  const y = v => TT + h * (1 - Math.min(1.02, v) / 1.02);
+  return {shown, x, y, w, h};
+}
+
+function drawTrace(){
+  const ink = css("--ink"), muted = css("--muted"), grid = css("--grid"),
+        orange = css("--orange"), violet = css("--violet"), surface = css("--surface");
+  wipe(tctx);
+  const {shown, x, y, w, h} = traceGeom();
+
+  tctx.font = FS + 'px "IBM Plex Mono", monospace';
+  tctx.textBaseline = "middle";
+  tctx.strokeStyle = grid;
+  tctx.lineWidth = 1;
+  for (const v of [0, 0.25, 0.5, 0.75, 1]){
+    tctx.beginPath();
+    tctx.moveTo(TL, Math.round(y(v)) + 0.5);
+    tctx.lineTo(TL + w, Math.round(y(v)) + 0.5);
+    tctx.stroke();
+    tctx.fillStyle = muted;
+    tctx.textAlign = "right";
+    tctx.fillText(v.toFixed(2), TL - 9, y(v));
+  }
+  if (!shown.length){
+    tctx.textAlign = "left";
+    tctx.fillStyle = muted;
+    tctx.fillText("no add() calls yet — send a stimulus", TL + 6, TT + h / 2);
+    return;
+  }
+
+  // the novel field: everything at or above baseline × threshold
+  tctx.beginPath();
+  tctx.moveTo(x(0), y(shown[0].base * threshold));
+  for (let i = 1; i < shown.length; i++) tctx.lineTo(x(i), y(shown[i].base * threshold));
+  tctx.lineTo(x(shown.length - 1), TT);
+  tctx.lineTo(x(0), TT);
+  tctx.closePath();
+  tctx.globalAlpha = 0.10;
+  tctx.fillStyle = violet;
+  tctx.fill();
+  tctx.globalAlpha = 1;
+
+  // baseline × threshold
+  tctx.strokeStyle = violet;
+  tctx.lineWidth = 2;
+  tctx.setLineDash([4, 4]);
+  tctx.beginPath();
+  shown.forEach((e, i) => i ? tctx.lineTo(x(i), y(e.base * threshold)) : tctx.moveTo(x(i), y(e.base * threshold)));
+  tctx.stroke();
+  tctx.setLineDash([]);
+
+  // the score
+  tctx.strokeStyle = orange;
+  tctx.lineWidth = 2;
+  tctx.lineJoin = "round";
+  tctx.beginPath();
+  shown.forEach((e, i) => i ? tctx.lineTo(x(i), y(e.score)) : tctx.moveTo(x(i), y(e.score)));
+  tctx.stroke();
+
+  // novel calls carry a ring, so the verdict is not colour alone
+  for (let i = 0; i < shown.length; i++){
+    if (!shown[i].novel) continue;
+    tctx.beginPath();
+    tctx.arc(x(i), y(shown[i].score), 3.4, 0, 6.284);
+    tctx.fillStyle = surface;
+    tctx.fill();
+    tctx.strokeStyle = orange;
+    tctx.lineWidth = 2;
+    tctx.stroke();
+  }
+  const last = shown[shown.length - 1];
+  tctx.beginPath();
+  tctx.arc(x(shown.length - 1), y(last.score), 4, 0, 6.284);
+  tctx.fillStyle = orange;
+  tctx.fill();
+
+  tctx.textAlign = "left";
+  tctx.fillStyle = orange;
+  tctx.fillText("novelty", TL + w + 10, y(last.score));
+  tctx.fillStyle = violet;
+  tctx.fillText("baseline ×t", TL + w + 10, Math.max(TT + 8, y(last.base * threshold) + (Math.abs(y(last.score) - y(last.base * threshold)) < 13 ? 14 : 0)));
+  tctx.fillStyle = muted;
+  tctx.textAlign = "left";
+  tctx.fillText("← older", TL, TH - 8);
+  tctx.textAlign = "right";
+  tctx.fillText("add #" + last.n, TL + w, TH - 8);
+}
+
+/* ============================================================ running it */
+
+function pushEvent(src, input){
+  const base = filter.window.mean();
+  const {active, score} = filter.novelty(input);
+  const novel = base === null ? true : score >= base * threshold;
+  const prev = filter.weights.slice();
+  filter.add(input);
+  addCount++; evtCount++;
+  events.push({n: evtCount, src, score, base: base === null ? score : base, novel, active});
+  if (events.length > 400) events = events.slice(-400);
+
+  lastInput = input;
+  const litPns = new Set();
+  for (const kc of active) for (const pn of filter.projection.connections[kc]) litPns.add(pn);
+  anim = {
+    t0: performance.now(), dur: reduced ? 1 : (streaming || queue.length ? 300 : 620),
+    prev, next: filter.weights.slice(), input, active,
+    activeSet: new Set(active), litPns,
+  };
+  dirty = true;
+  render();
+}
+
+function runTicks(n){
+  const prev = filter.weights.slice();
+  filter.tick(n);
+  tickCount += n;
+  anim = {t0: performance.now(), dur: reduced ? 1 : 700, prev, next: filter.weights.slice(),
+          input: lastInput, active: [], activeSet: null, litPns: null};
+  dirty = true;
+  render();
+}
+
+function render(){
+  const last = events[events.length - 1];
+  document.getElementById("score").textContent = last ? last.score.toFixed(3) : "—";
+  document.getElementById("baseline").textContent = last ? (last.base * threshold).toFixed(3) : "—";
+  document.getElementById("lastsrc").textContent = last ? last.src : "—";
+  document.getElementById("adds").textContent = addCount;
+  document.getElementById("ticks").textContent = tickCount;
+  let carved = 0;
+  for (let i = 0; i < cfg.m; i++) if (filter.weights[i] < 0.999) carved++;
+  document.getElementById("carved").textContent = carved + " / " + cfg.m;
+  document.getElementById("bytes").textContent = (cfg.m * 4 / 1000).toFixed(1) + " kB";
+
+  const pill = document.getElementById("verdict");
+  if (last){
+    pill.textContent = last.novel ? "novel" : "familiar";
+    pill.className = "pill mono " + (last.novel ? "novel" : "familiar");
+  }
+
+  if (reelOn){
+    document.getElementById("reel-val").textContent = last ? last.score.toFixed(3) : "—";
+    const rp = document.getElementById("reel-pill");
+    rp.textContent = last ? (last.novel ? "novel" : "familiar") : "—";
+    rp.className = "pill mono " + (last && last.novel ? "novel" : "familiar");
+  }
+
+  const rows = events.slice(-12).reverse().map(e => `<tr>
+    <td class="num">${e.n}</td><td>${e.src}</td>
+    <td class="num">${e.score.toFixed(3)}</td>
+    <td class="num">${(e.base * threshold).toFixed(3)}</td>
+    <td class="${e.novel ? "v-novel" : ""}">${e.novel ? "novel" : "familiar"}</td>
+    <td class="num">${e.active.length}</td></tr>`).join("");
+  document.getElementById("log").innerHTML = rows;
+  drawTrace();
+}
+
+let raf = null;
+function loop(){
+  const running = drawBench();
+  if (running || dirty){ dirty = false; raf = requestAnimationFrame(loop); }
+  else raf = null;
+}
+function kick(){ if (raf === null) raf = requestAnimationFrame(loop); }
+
+/* ---- transport, queues, scripted runs ---- */
+
+let streaming = false, queue = [], timer = null;
+const SRC_CYCLE = ["A", "B", "A", "C", "A", "B"];
+let cycle = 0;
+
+function step(){
+  if (queue.length){
+    const s = queue.shift();
+    if (s.type === "add") pushEvent(s.src, stimulus(s.src));
+    else runTicks(s.n);
+  } else if (streaming){
+    const src = Math.random() < 0.12 ? "noise" : SRC_CYCLE[cycle++ % SRC_CYCLE.length];
+    pushEvent(src, stimulus(src));
+  } else { clearInterval(timer); timer = null; return; }
+  kick();
+}
+function pump(period){
+  if (timer) clearInterval(timer);
+  timer = setInterval(step, period);
+  step();
+}
+
+document.querySelectorAll("[data-src]").forEach(b => b.addEventListener("click", () => {
+  pushEvent(b.dataset.src, stimulus(b.dataset.src));
+  kick();
+}));
+
+document.getElementById("stream").addEventListener("click", e => {
+  streaming = !streaming;
+  e.currentTarget.setAttribute("aria-pressed", String(streaming));
+  e.currentTarget.textContent = streaming ? "stream ⏸" : "stream ▶";
+  if (streaming) pump(430); else if (!queue.length && timer){ clearInterval(timer); timer = null; }
+});
+
+document.getElementById("tick").addEventListener("click", () => { runTicks(50); kick(); });
+
+function resetAll(){
+  filter = new FFBF(cfg);
+  events = []; addCount = 0; tickCount = 0; evtCount = 0; lastInput = null;
+  anim = null; drawW.fill(1); dirty = true;
+  render(); kick();
+}
+document.getElementById("reset").addEventListener("click", resetAll);
+
+const RUNS = {
+  repeat: () => Array.from({length: 5}, () => ({type: "add", src: "D"})),
+  stranger: () => [{type: "add", src: "A"}, {type: "add", src: "B"}, {type: "add", src: "A"},
+                   {type: "add", src: "E"}],
+  forget: () => [{type: "tick", n: 200}, {type: "tick", n: 200}, {type: "add", src: "A"}],
+};
+document.querySelectorAll("[data-run]").forEach(b => b.addEventListener("click", () => {
+  queue = RUNS[b.dataset.run]();
+  pump(b.dataset.run === "forget" ? 780 : 700);
+}));
+
+/* ---- knobs ---- */
+
+function knob(id, apply, fmt){
+  const el = document.getElementById(id), out = document.getElementById(id + "-v");
+  el.addEventListener("input", () => {
+    const v = parseFloat(el.value);
+    apply(v);
+    if (out) out.textContent = fmt(v);
+    dirty = true; render(); kick();
+  });
+}
+knob("delta", v => cfg.delta = v, v => v.toFixed(2));
+knob("eps", v => cfg.epsilon = v, v => v.toFixed(3));
+knob("k", v => cfg.k = v, v => String(v));
+knob("rate", v => cfg.tick_rate = v, v => v.toFixed(3));
+knob("thr", v => threshold = v, v => v.toFixed(2));
+document.getElementById("shape").addEventListener("change", e => { cfg.tick_shape = e.target.value; });
+
+/* ---- hover readouts ---- */
+
+bench.addEventListener("pointermove", ev => {
+  const r = bench.getBoundingClientRect();
+  const x = (ev.clientX - r.left) * (BW / r.width), y = (ev.clientY - r.top) * (BH / r.height);
+  if (y > BASE - SCALE - 20 && y < BASE + 4){
+    const kc = Math.min(cfg.m - 1, Math.max(0, Math.floor((x - PAD) / ((BW - 2 * PAD) / cfg.m))));
+    tip.textContent = `kc ${kc}\nw = ${filter.weights[kc].toFixed(3)}\nreads PN ${filter.projection.connections[kc].join(" ")}`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(r.width - 210, ev.clientX - r.left + 12) + "px";
+    tip.style.top = (ev.clientY - r.top - 54) + "px";
+  } else if (y > IN_Y - 6 && y < IN_Y + IN_H + 6 && lastInput){
+    const pn = Math.min(DIM - 1, Math.max(0, Math.floor((x - PAD) / ((BW - 2 * PAD) / DIM))));
+    tip.textContent = `PN ${pn}\nvalue = ${lastInput[pn].toFixed(2)}`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(r.width - 120, ev.clientX - r.left + 12) + "px";
+    tip.style.top = (ev.clientY - r.top + 22) + "px";
+  } else tip.style.opacity = 0;
+});
+bench.addEventListener("pointerleave", () => tip.style.opacity = 0);
+
+trace.addEventListener("pointermove", ev => {
+  const r = trace.getBoundingClientRect();
+  const {shown, x, y} = traceGeom();
+  if (!shown.length) return;
+  const px = (ev.clientX - r.left) * (TW / r.width);
+  let best = 0;
+  for (let i = 1; i < shown.length; i++) if (Math.abs(x(i) - px) < Math.abs(x(best) - px)) best = i;
+  const e2 = shown[best];
+  tip2.textContent = `add #${e2.n} · ${e2.src}\nnovelty  ${e2.score.toFixed(3)}\nbaseline ${(e2.base * threshold).toFixed(3)}\n${e2.novel ? "novel" : "familiar"}`;
+  tip2.style.opacity = 1;
+  tip2.style.left = Math.min(r.width - 170, x(best) * (r.width / TW) + 12) + "px";
+  tip2.style.top = Math.max(0, y(e2.score) - 62) + "px";
+});
+trace.addEventListener("pointerleave", () => tip2.style.opacity = 0);
+
+/* ---- reel: one scripted run at presentation scale, for a screen recording ----
+   It borrows the two canvases from the page rather than duplicating them, so there is
+   only ever one set of drawing code to keep right. */
+
+const reel = document.getElementById("reel");
+const reelStage = document.getElementById("reel-stage");
+const wraps = [bench.parentElement, trace.parentElement];
+const homes = wraps.map(w => [w.parentElement, w.nextSibling]);
+const send = src => { pushEvent(src, stimulus(src)); kick(); };
+
+const SCRIPT = [
+  {card: {t: "\u201cHave I recently seen anything like this?\u201d",
+          s: "FFBF answers it continuously, over an endless stream, in a few kilobytes.\nNo training, no labels, one pass."}, wait: 4600},
+  {cap: "A fresh filter. Three hundred synapses, every one of them at 1.0 \u2014 nothing stored, nothing learned.",
+   do: resetAll, wait: 3200},
+  {cap: "One stimulus. The fifteen loudest detectors fire, and the score reads the weights beneath them.",
+   do: () => send("D"), wait: 3800},
+  {cap: "A high score over untouched weights: novel. The same call then carves those fifteen down.", wait: 3400},
+  {cap: "The same source, four more times. Each copy falls into the dent the last one left.", wait: 900},
+  {do: () => send("D"), wait: 950}, {do: () => send("D"), wait: 950},
+  {do: () => send("D"), wait: 950}, {do: () => send("D"), wait: 1900},
+  {cap: "Familiar traffic now. The baseline is nothing but the mean of what just went past.", wait: 700},
+  {do: () => send("A"), wait: 800}, {do: () => send("B"), wait: 800},
+  {do: () => send("C"), wait: 800}, {do: () => send("A"), wait: 800},
+  {do: () => send("B"), wait: 800}, {do: () => send("C"), wait: 1200},
+  {cap: "A source it has never met. Same wiring, untouched weights \u2014 the score jumps.",
+   do: () => send("E"), wait: 4200},
+  {cap: "Then time passes. tick() lets every weight drift back toward 1.0.",
+   do: () => { runTicks(200); kick(); }, wait: 2400},
+  {do: () => { runTicks(200); kick(); }, wait: 2800},
+  {cap: "Nothing was deleted. It decayed \u2014 so what stopped arriving reads as new again.",
+   do: () => send("A"), wait: 4600},
+  {card: {t: "FFBF", s: "Fruit Fly Bloom Filter \u00b7 Rust core, Python bindings\ngithub.com/clembarr/ffbf-novelty-detector"},
+   wait: 5200},
+];
+const REEL_MS = SCRIPT.reduce((a, s) => a + s.wait, 0);
+
+let reelTimer = null, reelIdx = 0, reelStart = 0, reelRaf = null;
+
+function reelCard(c){
+  if (!c){ delete reel.dataset.card; return; }
+  document.getElementById("reel-title").textContent = c.t;
+  document.getElementById("reel-sub").textContent = c.s;
+  reel.dataset.card = "1";
+}
+function reelNext(){
+  if (reelIdx >= SCRIPT.length){ stopReel(); return; }
+  const s = SCRIPT[reelIdx++];
+  if (s.card) reelCard(s.card);
+  if (s.cap !== undefined){ reelCard(null); document.getElementById("reel-cap").textContent = s.cap; }
+  if (s.do) s.do();
+  reelTimer = setTimeout(reelNext, s.wait);
+}
+function reelProgress(){
+  const p = Math.min(1, (performance.now() - reelStart) / REEL_MS);
+  document.getElementById("reel-prog").style.width = (p * 100) + "%";
+  if (reelOn) reelRaf = requestAnimationFrame(reelProgress);
+}
+function startReel(){
+  if (reelOn) return;
+  if (streaming) document.getElementById("stream").click();
+  queue = [];
+  if (timer){ clearInterval(timer); timer = null; }
+  reelOn = true;
+  reel.hidden = false;
+  wraps.forEach(w => reelStage.appendChild(w));
+  resize();
+  if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+  reelIdx = 0;
+  //the viewport is still changing while the browser goes fullscreen: refit once it has settled
+  setTimeout(() => {
+    if (!reelOn) return;
+    resize();
+    reelStart = performance.now();
+    reelProgress();
+    reelNext();
+  }, 420);
+}
+function stopReel(){
+  if (!reelOn) return;
+  clearTimeout(reelTimer);
+  cancelAnimationFrame(reelRaf);
+  reelOn = false;
+  reel.hidden = true;
+  reelCard(null);
+  homes.forEach(([parent, next], i) => parent.insertBefore(wraps[i], next));
+  resize();
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+}
+document.getElementById("reelbtn").addEventListener("click", startReel);
+addEventListener("keydown", e => { if (e.key === "Escape") stopReel(); });
+
+/* ---- layout ---- */
+
+function resize(){
+  geom();
+  BW = fit(bench, BH);
+  TW = fit(trace, TH);
+  KEEP = TW < 620 ? 60 : 120;
+  dirty = true;
+  render(); kick();
+}
+addEventListener("resize", resize);
+document.addEventListener("fullscreenchange", resize);
+//the window event misses a box that changes without the window doing so - entering fullscreen,
+//the host frame being resized - and a canvas fitted to the wrong box is what smears the drawing
+if (window.ResizeObserver){
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(bench.parentElement);
+  ro.observe(trace.parentElement);
+}
+
+/* ---- open on a memory that has already lived a little ---- */
+for (let i = 0; i < 26; i++){
+  const src = SRC_CYCLE[i % SRC_CYCLE.length];
+  const input = stimulus(src);
+  const base = filter.window.mean();
+  const {active, score} = filter.novelty(input);
+  filter.add(input);
+  addCount++; evtCount++;
+  events.push({n: evtCount, src, score, base: base === null ? score : base,
+               novel: base === null ? true : score >= base, active});
+  lastInput = input;
+}
+drawW.set(filter.weights);
+resize();
+</script>
+</body>
+</html>
