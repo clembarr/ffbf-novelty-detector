@@ -6,14 +6,19 @@
 
 A classical Bloom filter answers *is this exact item in my set*. On a stream, that is rarely the question. **FFBF** answers the useful one: it **generalises** - something unseen from a familiar domain is already half-known; it **forgets** - what stops arriving becomes new again; and it does both in **fixed memory**, a few thousand floats whatever the stream length. No training, no labels, one pass.
 
+It brings three sensitivities:
+- **Continuously valued score**: novelty is a gradient, not a « known / unknown ».
+- **Distance**: the more an input resembles what is stored, the lower its novelty.
+- **Time**: an input seen again after a long gap feels newer than one seen a moment ago.
+
 That combination buys a handful of jobs that are awkward otherwise:
 
-- **Stream monitoring** - logs, telemetry, support queues: flag what does not look like the recent past, with no labelled dataset and no model to retrain.
-- **Ingestion and dedup** - drop near-duplicates before an expensive stage (embedding, indexing, an LLM call). *Close enough to something already seen* is exactly what the score means.
-- **Cache admission and routing** - a novel query is worth the cold path, a familiar one is not.
-- **Edge and embedded** - a few KiB of state, one pass, no backing store, no growth to plan for.
-- **Data curation and active learning** - keep the samples that carry something new, skip the redundant bulk.
-- **Drift alarms** - because the filter forgets, a regime that goes quiet becomes detectable again instead of staying silently familiar.
+- **Stream monitoring**: logs, telemetry, support queues: flag what does not look like the recent past, with no labelled dataset and no model to retrain.
+- **Ingestion and dedup**: drop near-duplicates before an expensive stage (embedding, indexing, an LLM call). *Close enough to something already seen* is exactly what the score means.
+- **Cache admission and routing**: a novel query is worth the cold path, a familiar one is not.
+- **Edge and embedded**: a few KiB of state, one pass, no backing store, no growth to plan for.
+- **Data curation and active learning**: keep the samples that carry something new, skip the redundant bulk.
+- **Drift alarms**: because the filter forgets, a regime that goes quiet becomes detectable again instead of staying silently familiar.
 
 It complements a vector index rather than replacing one: FFBF tells you *whether* something is new, not *what* it resembles.
 
