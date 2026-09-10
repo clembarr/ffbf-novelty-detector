@@ -13,10 +13,8 @@ It brings three sensitivities:
 
 That combination buys a handful of jobs that are awkward otherwise:
 
+- **Openendedness of LLM**: semantic derivation, concept drift, emergence of novelties. 
 - **Stream monitoring**: logs, telemetry, support queues: flag what does not look like the recent past, with no labelled dataset and no model to retrain.
-- **Ingestion and dedup**: drop near-duplicates before an expensive stage (embedding, indexing, an LLM call). *Close enough to something already seen* is exactly what the score means.
-- **Cache admission and routing**: a novel query is worth the cold path, a familiar one is not.
-- **Edge and embedded**: a few KiB of state, one pass, no backing store, no growth to plan for.
 - **Data curation and active learning**: keep the samples that carry something new, skip the redundant bulk.
 - **Drift alarms**: because the filter forgets, a regime that goes quiet becomes detectable again instead of staying silently familiar.
 
